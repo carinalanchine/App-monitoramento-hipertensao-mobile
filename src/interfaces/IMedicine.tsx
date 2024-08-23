@@ -3,6 +3,7 @@ export interface IMedicine {
   title: string,
   interval: string,
   start: string,
-  date: string,
-  time: string,
+  dosage?: string,
+  date?: string,
+  time?: string,
 }

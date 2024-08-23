@@ -240,8 +240,6 @@ const TakeMedicineScreen = ({ navigation }: TakeMedicineScreenProps) => {
         keyExtractor={(item) => item.id}
       />
 
-      <StatusBar backgroundColor={colors.secondary} />
-
     </SafeAreaView>
   )
 }
@@ -250,7 +248,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingTop: 10,
+    paddingTop: 30,
     paddingBottom: 10,
   },
   card: {
@@ -302,7 +300,7 @@ const styles = StyleSheet.create({
 const stylesModal = StyleSheet.create({
   modalContainer: {
     backgroundColor: colors.white,
-    paddingVertical: 40,
+    paddingVertical: 20,
     marginHorizontal: 10,
     borderRadius: 8,
   },

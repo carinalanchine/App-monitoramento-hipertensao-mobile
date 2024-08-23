@@ -100,11 +100,14 @@ const RegisterMedicineScreen = () => {
         </View>
 
       </ScrollView >
-      <Button size="full" variant="primary">
-        <View style={styles.buttonContent}>
-          <Text>Salvar</Text>
-        </View>
-      </Button>
+
+      <View style={styles.button}>
+        <Button size="full" variant="primary">
+          <View style={styles.buttonContent}>
+            <Text>Salvar</Text>
+          </View>
+        </Button>
+      </View>
 
     </View>
   )
@@ -114,7 +117,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingHorizontal: 20,
     paddingBottom: 20
   },
   header: {
@@ -128,15 +130,20 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xl,
     fontFamily: fontFamily.bold,
     marginBottom: 36,
+    paddingHorizontal: 20,
   },
   containerInput: {
+    paddingHorizontal: 20,
     marginTop: 30,
     gap: 20
+  },
+  button: {
+    paddingHorizontal: 20,
   },
   buttonContent: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%'
+    height: '100%',
   }
 })
 
