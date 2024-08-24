@@ -33,7 +33,7 @@ const stylesVariant = StyleSheet.create({
   },
   outlinePrimary: {
     backgroundColor: colors.white,
-    borderColor: colors.primary,
+    borderColor: colors.black,
     borderWidth: 1,
   },
   outlineDestructive: {

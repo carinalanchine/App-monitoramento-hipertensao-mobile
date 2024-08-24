@@ -11,9 +11,13 @@ import MeasurePressureScreen from "../screens/measure-pressure";
 import ListOfVideosScreen from "../screens/list-of-videos";
 import ListMedicineScreen from "../screens/list-medicine";
 import RegisterMedicineScreen from "../screens/register-medicine";
+import InitialScreen from "../screens/inital";
+import RegisterScreen from "../screens/register";
 
 export type RootStackParamList = {
+  initial: undefined;
   login: undefined;
+  register: undefined;
   main: undefined;
   takeMedicine: undefined;
   measurePressure: undefined;
@@ -31,6 +35,14 @@ const StackRoutes = () => {
         headerShown: false
       }}
     >
+      <Stack.Screen
+        name="initial"
+        component={InitialScreen}
+      />
+      <Stack.Screen
+        name="register"
+        component={RegisterScreen}
+      />
       <Stack.Screen
         name="login"
         component={LoginScreen}

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
@@ -12,13 +12,15 @@ type InputProps = {
   editable?: boolean;
   helperText?: string;
   defaultValue?: string;
+  valueType?: KeyboardTypeOptions;
 }
 
-const Input = ({ label, onChangeText, placeholder, value, secureTextEntry = false, editable, helperText, defaultValue }: InputProps) => {
+const Input = ({ label, onChangeText, placeholder, valueType, value, secureTextEntry = false, editable, helperText, defaultValue }: InputProps) => {
   return (
     <View>
       <TextInput
         style={styles.input}
+        keyboardType={valueType}
         onChangeText={onChangeText}
         placeholder={placeholder}
         value={value}
@@ -40,14 +42,14 @@ const styles = StyleSheet.create({
     height: 56,
     borderColor: colors.black,
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 20,
     paddingHorizontal: 20,
   },
   label: {
     fontSize: fontSize.md,
     position: "relative",
-    top: -68,
-    marginLeft: 10,
+    top: -78,
+    marginLeft: -5,
     paddingHorizontal: 10,
     backgroundColor: colors.secondary,
     alignSelf: "flex-start",

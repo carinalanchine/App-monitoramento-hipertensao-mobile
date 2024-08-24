@@ -9,4 +9,5 @@ export const colors = {
   backdrop: "#00000052",
   gray400: "#D9D9D9",
   green900: "#00512A",
+  primaryBorder: "#025F33",
 };

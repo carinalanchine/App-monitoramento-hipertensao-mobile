@@ -12,19 +12,21 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 
-type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
+type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'register'>;
 
-type FormLogin = {
+type FormRegister = {
+  nome: string;
   cpf: string;
   password: string;
+  verifyPassword: string;
 }
 
-const LoginScreen = ({ navigation }: LoginScreenProps) => {
-  const [form, setForm] = useState<FormLogin | null>(null);
+const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
+  const [form, setForm] = useState<FormRegister | null>(null);
   const toast = useToast();
 
-  const handleLogin = () => {
-    if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
+  const handleRegister = () => {
+    if (!form || !form.cpf || form.cpf.length < 14 || !form.password || !form.verifyPassword) {
       toast.show("Preencha todos os campos", {
         type: "danger",
       });
@@ -32,7 +34,15 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       return
     };
 
-    toast.show("Login realizado com sucesso!", {
+    if (!(form.password === form.verifyPassword)) {
+      toast.show("As senhas precisam ser iguais", {
+        type: "danger",
+      });
+
+      return
+    }
+
+    toast.show("Cadastro realizado com sucesso!", {
       type: "success",
     });
     navigation.navigate("main");
@@ -52,14 +62,19 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scroll}>
+      <ScrollView>
         <View style={styles.containerImage}>
           <Image source={Logo} style={styles.image} />
         </View>
 
-        <Text style={styles.title}>login</Text>
+        <Text style={styles.title}>cadastro</Text>
 
         <View style={styles.containerInput}>
+          <Input
+            label="nome"
+            placeholder="digite seu nome"
+            onChangeText={(text) => setForm({ ...form, nome: text })}
+          />
           <Input
             label="cpf"
             placeholder="111.111.111-11"
@@ -74,15 +89,22 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
             value={form?.password || ""}
             onChangeText={(text) => setForm({ ...form, password: text })}
           />
+          <Input
+            label="confirmar senha"
+            placeholder="********"
+            secureTextEntry
+            value={form?.verifyPassword || ""}
+            onChangeText={(text) => setForm({ ...form, verifyPassword: text })}
+          />
         </View>
       </ScrollView>
 
 
       <View style={styles.buttonsContainer}>
-        <Button variant="primary" size="full" onPress={handleLogin}>
+        <Button variant="primary" size="full" onPress={handleRegister}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonEntrar}>
-              entrar
+              cadastrar
             </Text>
           </View>
         </Button>
@@ -106,9 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
     paddingHorizontal: 20,
     marginBottom: 20
-  },
-  scroll: {
-    flex: 1,
   },
   image: {
     height: 142,
@@ -151,4 +170,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LoginScreen;
+export default RegisterScreen;
