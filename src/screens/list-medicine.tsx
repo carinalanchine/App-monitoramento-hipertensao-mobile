@@ -34,6 +34,20 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       interval: "08 horas",
       dosage: "5 gramas",
     },
+    {
+      id: "3",
+      title: "Losartana",
+      start: "22/03/2024",
+      interval: "08 horas",
+      dosage: "5 gramas",
+    },
+    {
+      id: "4",
+      title: "Losartana",
+      start: "22/03/2024",
+      interval: "08 horas",
+      dosage: "5 gramas",
+    },
   ]
 
   return (
@@ -76,20 +90,19 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
       </ModalComponent>
 
-      <Text style={styles.subtitle}>Remédios</Text>
-
       <FlatList
         data={medicines}
-        contentContainerStyle={{ gap: 10 }}
+        contentContainerStyle={{ gap: 1 }}
         renderItem={({ item }) => (
 
           <View style={styles.containerCard}>
             <Card variant="secondary">
               <View style={styles.contentCard}>
                 <Text style={styles.textCard}>{item.title}</Text>
-                <Text style={styles.textCard}>Começou: {item.start}</Text>
-                <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
-                <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
+                <View>
+                  <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
+                  <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
+                </View>
 
                 <Button
                   variant="destructive"
@@ -108,9 +121,9 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       />
 
       <View style={styles.iconButton}>
-        <Button variant="primary" size="icon" onPress={() => navigation.navigate("registerMedicine")}>
+        <Button variant="remedio" size="md" onPress={() => navigation.navigate("registerMedicine")}>
           <View style={styles.buttonContent}>
-            <Ionicons name="add-outline" size={36} />
+            <Text style={styles.textButton}>novo remédio</Text>
           </View>
         </Button>
       </View>
@@ -122,18 +135,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingTop: 30,
-  },
-  subtitle: {
-    paddingHorizontal: 30,
-    fontSize: fontSize.xl,
-    fontFamily: fontFamily.bold,
-    marginBottom: 20,
+    paddingTop: 20,
   },
   containerCard: {
     paddingHorizontal: 30,
     paddingTop: 10,
-    gap: 30,
+    paddingBottom: 10,
   },
   contentCard: {
     gap: 20,

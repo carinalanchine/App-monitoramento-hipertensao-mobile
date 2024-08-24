@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Logo from "../../assets/logo2.png"
+import Logo from "../../assets/logo.png"
 import { Image } from "react-native";
 import { fontSize } from "../theme/font-size";
 import { fontFamily } from "../theme/font-family";

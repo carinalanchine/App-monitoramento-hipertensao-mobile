@@ -6,15 +6,16 @@ type ButtonProps = {
   children: ReactNode;
   onPress?: () => void;
   variant: "primary" | "destructive" | "outlinePrimary" |
-  "outlineDestructive" | "default" | "secondary";
-  size: "full" | "icon" | "md";
+  "outlineDestructive" | "default" | "secondary" |
+  "dicas" | "pressao" | "remedio";
+  size: "full" | "icon" | "md" | "menuCard" | "backButton";
 }
 
 export const Button = (input: ButtonProps) => {
   return (
     <TouchableOpacity
       onPress={input.onPress}
-      style={[variantStyles[input.variant], sizeStyles[input.size]]}>
+      style={[variantStyles[input.variant], sizeStyles[input.size],]}>
 
       {input.children}
     </TouchableOpacity>
@@ -22,6 +23,15 @@ export const Button = (input: ButtonProps) => {
 }
 
 const stylesVariant = StyleSheet.create({
+  dicas: {
+    backgroundColor: colors.lightBlue
+  },
+  remedio: {
+    backgroundColor: colors.tertiary,
+  },
+  pressao: {
+    backgroundColor: colors.pink
+  },
   primary: {
     backgroundColor: colors.primary,
   },
@@ -62,6 +72,15 @@ const stylesSize = StyleSheet.create({
     height: 70,
     borderRadius: 200,
   },
+  menu: {
+    width: 300,
+    height: 200,
+    borderRadius: 15
+  },
+  backButton: {
+    width: '100%',
+    height: 48,
+  }
 })
 
 const variantStyles = {
@@ -71,10 +90,15 @@ const variantStyles = {
   outlinePrimary: stylesVariant.outlinePrimary,
   outlineDestructive: stylesVariant.outlineDestructive,
   secondary: stylesVariant.secondary,
+  dicas: stylesVariant.dicas,
+  remedio: stylesVariant.remedio,
+  pressao: stylesVariant.pressao,
 }
 
 const sizeStyles = {
   full: stylesSize.full,
   md: stylesSize.md,
   icon: stylesSize.icon,
+  menuCard: stylesSize.menu,
+  backButton: stylesSize.backButton,
 }

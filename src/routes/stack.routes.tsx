@@ -13,6 +13,8 @@ import ListMedicineScreen from "../screens/list-medicine";
 import RegisterMedicineScreen from "../screens/register-medicine";
 import InitialScreen from "../screens/inital";
 import RegisterScreen from "../screens/register";
+import HomeScreen from "../screens/home";
+import { colors } from "../theme/colors";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -47,7 +49,7 @@ const StackRoutes = () => {
         name="login"
         component={LoginScreen}
       />
-      <Stack.Screen name="main" component={TabRoutes} />
+      <Stack.Screen name="main" component={HomeScreen} />
       <Stack.Screen
         name="takeMedicine"
         component={TakeMedicineScreen}
@@ -68,7 +70,12 @@ const StackRoutes = () => {
           headerShown: true,
           header(props) {
             return (
-              <BackButton onPress={props.navigation.goBack} />
+              <>
+                <BackButton variant="pressao" onPress={props.navigation.goBack} />
+                <View style={style.subtitlePressao}>
+                  <Text style={style.subtitle}>Medir pressão</Text>
+                </View>
+              </>
             );
           },
         }}
@@ -81,7 +88,7 @@ const StackRoutes = () => {
           headerShown: true,
           header(props) {
             return (
-              <BackButton onPress={props.navigation.goBack} />
+              <></>
             );
           },
         }}
@@ -94,7 +101,12 @@ const StackRoutes = () => {
           headerShown: true,
           header(props) {
             return (
-              <BackButton onPress={props.navigation.goBack} />
+              <>
+                <BackButton variant="remedio" onPress={props.navigation.goBack} />
+                <View style={style.subtitleRemedio}>
+                  <Text style={style.subtitle}>Remédios</Text>
+                </View>
+              </>
             );
           },
         }}
@@ -127,17 +139,32 @@ const style = StyleSheet.create({
   text: {
     fontFamily: fontFamily.medium,
     fontSize: fontSize.lg,
+  },
+  subtitleRemedio: {
+    backgroundColor: colors.tertiary,
+    paddingBottom: 30,
+  },
+  subtitlePressao: {
+    backgroundColor: colors.pink,
+    paddingBottom: 30,
+  },
+  subtitle: {
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.bold,
+    paddingTop: 20,
+    paddingLeft: 25
   }
 });
 
 
 type BackButtonProps = {
   onPress: () => void;
+  variant?: "dicas" | "pressao" | "remedio" | "secondary";
 }
 
-const BackButton = ({ onPress }: BackButtonProps) => {
+const BackButton = ({ onPress, variant = "secondary" }: BackButtonProps) => {
   return (
-    <Button size="full" variant="secondary" onPress={onPress}>
+    <Button size="backButton" variant={variant} onPress={onPress}>
       <View style={style.header}>
         <AntDesign name="arrowleft" size={24} color="black" />
         <Text style={style.text}>Voltar</Text>
