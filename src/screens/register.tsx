@@ -67,7 +67,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           <Image source={Logo} style={styles.image} />
         </View>
 
-        <Text style={styles.title}>cadastro</Text>
+        <Text style={styles.title}>Cadastro</Text>
 
         <View style={styles.containerInput}>
           <Input
@@ -104,7 +104,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         <Button variant="primary" size="full" onPress={handleRegister}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonEntrar}>
-              cadastrar
+              Cadastrar
             </Text>
           </View>
         </Button>
@@ -112,7 +112,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         <Button variant="default" size="full" onPress={() => navigation.navigate("initial")}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonVoltar}>
-              voltar
+              Voltar
             </Text>
           </View>
         </Button>

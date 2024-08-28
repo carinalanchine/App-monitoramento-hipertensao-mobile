@@ -57,7 +57,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
           <Image source={Logo} style={styles.image} />
         </View>
 
-        <Text style={styles.title}>login</Text>
+        <Text style={styles.title}>Login</Text>
 
         <View style={styles.containerInput}>
           <Input
@@ -82,7 +82,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         <Button variant="primary" size="full" onPress={handleLogin}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonEntrar}>
-              entrar
+              Entrar
             </Text>
           </View>
         </Button>
@@ -90,7 +90,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         <Button variant="default" size="full" onPress={() => navigation.navigate("initial")}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonVoltar}>
-              voltar
+              Voltar
             </Text>
           </View>
         </Button>

@@ -24,24 +24,24 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <Text style={styles.text}>Serviços</Text>
 
         <View style={styles.containerButtons}>
-          <Button variant="dicas" size="menuCard">
+          <Button variant="dicas" size="menuCard" onPress={() => navigation.navigate("listOfVideos")}>
             <View style={styles.buttonContent}>
               <Image source={Dicas} style={styles.image} />
-              <Text style={styles.textButton}>dicas</Text>
+              <Text style={styles.textButton}>Dicas</Text>
             </View>
           </Button>
 
           <Button variant="pressao" size="menuCard" onPress={() => navigation.navigate("measurePressure")}>
             <View style={styles.buttonContent}>
               <Image source={Pressao} style={styles.image} />
-              <Text style={styles.textButton}>pressão</Text>
+              <Text style={styles.textButton}>Pressão</Text>
             </View>
           </Button>
 
           <Button variant="remedio" size="menuCard" onPress={() => navigation.navigate("listMedicine")}>
             <View style={styles.buttonContent}>
               <Image source={Remedio} style={styles.image} />
-              <Text style={styles.textButton}>remédio</Text>
+              <Text style={styles.textButton}>Remédios</Text>
             </View>
           </Button>
         </View>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     fontSize: fontSize["2xl"],
     paddingBottom: 30,
-    paddingTop: 10,
+    paddingTop: 20,
     paddingLeft: 15
   },
   text: {

@@ -1,115 +1,121 @@
 import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Input from "../components/input";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
 import { format, subHours } from "date-fns";
+import { ProgressStep } from "../components/progress-step";
+import { BackButton } from "../components/back-button";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../routes/stack.routes";
+
+type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
 type FormMedicine = {
   name: string;
-  color: string;
-  initDate: string;
-  initTime: string;
-  interval: string;
-  dosageType: string;
   dosage: string;
+  interval: string;
 }
 
-const RegisterMedicineScreen = () => {
+const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => {
   const [form, setForm] = useState<FormMedicine | null>(null);
+  const [step, setStep] = useState(1);
 
-  const maskDate = (value: string) => {
-    return value
-      .replace(/\D/g, '')
-      .replace(/(\d{2})(\d)/, '$1/$2')
-      .replace(/(\d{2})(\d)/, '$1/$2')
-      .replace(/(\d{4})\d+?$/, '$1');
-  };
+  const titleContent = [
+    'Nome do remédio',
+    'Dosagem do remédio',
+    'Frequência',
+  ]
 
-  const maskHour = (value: string) => {
-    return value
-      .replace(/\D/g, '')
-      .replace(/(\d{2})(\d)/, '$1:$2')
-      .replace(/(\d{2})\d+?$/, '$1');
+  const exContent = [
+    'Losartana',
+    '40 mg',
+    '8 horas',
+  ]
+
+  const handleBackButton = () => {
+    if (step == 1)
+      navigation.navigate("listMedicine");
+    else setStep(step - 1);
+  }
+
+  const handleInput = (text: string) => {
+    switch (step) {
+      case 1:
+        setForm({ ...form, name: text })
+        break;
+      case 2:
+        setForm({ ...form, dosage: text })
+        break;
+
+      case 3:
+        setForm({ ...form, interval: text })
+        break;
+    }
+  }
+
+  const handleInputValue = () => {
+    switch (step) {
+      case 1:
+        return form?.name || ""
+
+      case 2:
+        return form?.dosage || ""
+
+      case 3:
+        return form?.interval || ""
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.content}>
-        <Text style={styles.textCadastrarRemedio}>Cadastrar remédio</Text>
+    <>
+      <BackButton variant='secondary' onPress={() => handleBackButton()} />
+      <View style={styles.container}>
+        <ScrollView style={styles.content}>
 
-        <View style={styles.containerInput}>
-          <Input
-            label="Nome"
-            placeholder="Digite o nome do remédio"
-            value={form?.name || ""}
-            onChangeText={(text) => setForm({ ...form, name: text })}
-          />
-
-          <Input
-            label="Cor"
-            placeholder="Digite a cor do remédio"
-            value={form?.color || ""}
-            onChangeText={(text) => setForm({ ...form, color: text })}
-          />
-
-          <Input
-            label="Data inicial"
-            placeholder="Digite quando começou o uso"
-            helperText="dia/mês/ano"
-            value={form?.initDate ?? undefined}
-            defaultValue={format(new Date(), "dd/MM/yyyy")}
-            onChangeText={(text) => setForm({ ...form, initDate: maskDate(text) })}
-          />
-
-          <Input
-            label="Horário inicial"
-            placeholder="Digite a hora de tomar o remédio"
-            helperText="hora:minuto"
-            value={form?.initTime ?? undefined}
-            defaultValue={format(subHours(new Date(), 3), "HH:mm")}
-            onChangeText={(text) => setForm({ ...form, initTime: maskHour(text) })}
-          />
-
-          <Input
-            label="Intervalo"
-            placeholder="Digite o intervalo do remédio"
-            helperText="hora:minuto"
-            value={form?.interval ?? undefined}
-            defaultValue={format(subHours(new Date(), 3), "HH:mm")}
-            onChangeText={(text) => setForm({ ...form, interval: maskHour(text) })}
-          />
-
-          <Input
-            label="Tipo de dosagem"
-            placeholder="Digite o tipo da dose"
-            helperText="grama/miligrama"
-            value={form?.dosageType || ""}
-            onChangeText={(text) => setForm({ ...form, dosageType: text })}
-          />
-
-          <Input
-            label="Dosagem"
-            placeholder="Digite a dose"
-            value={form?.dosage || ""}
-            onChangeText={(text) => setForm({ ...form, dosage: text })}
-          />
-
-        </View>
-
-      </ScrollView >
-
-      <View style={styles.button}>
-        <Button size="full" variant="primary">
-          <View style={styles.buttonContent}>
-            <Text>Salvar</Text>
+          <View style={styles.steps}>
+            <ProgressStep number='1' status={step >= 1}></ProgressStep>
+            <AntDesign name="arrowright" size={25} color="black" />
+            <ProgressStep number='2' status={step >= 2}></ProgressStep>
+            <AntDesign name="arrowright" size={25} color="black" />
+            <ProgressStep number='3' status={step >= 3}></ProgressStep>
           </View>
-        </Button>
-      </View>
 
-    </View>
+          <Text style={styles.text}>{titleContent[step - 1]}</Text>
+
+          <View style={styles.inputContainer}>
+            <Input
+              placeholder={'ex: ' + exContent[step - 1]}
+              value={handleInputValue()}
+              onChangeText={(text) => handleInput(text)}
+            >
+            </Input>
+          </View>
+
+        </ScrollView >
+
+        {step == 3 ?
+          <View style={styles.button}>
+            <Button size="full" variant="remedio">
+              <View style={styles.buttonContent}>
+                <Text>Concluir</Text>
+              </View>
+            </Button>
+          </View> :
+          <View style={styles.button}>
+            <Button size="full" variant="remedio" onPress={() => setStep(step + 1)}>
+              <View style={styles.buttonContent}>
+                <Text>Próximo</Text>
+              </View>
+            </Button>
+          </View>
+        }
+
+      </View >
+    </>
   )
 }
 
@@ -117,14 +123,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   header: {
     marginTop: '15%',
     marginLeft: 30,
   },
+  inputContainer: {
+    paddingTop: 30,
+  },
+  text: {
+    paddingLeft: 10,
+    paddingTop: 30,
+    fontFamily: fontFamily.regular,
+    fontSize: fontSize["2xl"],
+  },
+  numberBorder: {
+    width: 150,
+    height: 150,
+    backgroundColor: 'black',
+    borderRadius: 75, // Half of width and height to make it circular
+  },
+  steps: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 20,
+  },
   content: {
     marginTop: 30,
+    paddingHorizontal: 20,
   },
   textCadastrarRemedio: {
     fontSize: fontSize.xl,

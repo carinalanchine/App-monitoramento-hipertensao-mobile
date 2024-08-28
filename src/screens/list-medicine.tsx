@@ -123,7 +123,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       <View style={styles.iconButton}>
         <Button variant="remedio" size="md" onPress={() => navigation.navigate("registerMedicine")}>
           <View style={styles.buttonContent}>
-            <Text style={styles.textButton}>novo remédio</Text>
+            <Text style={styles.textButton}>Novo remédio</Text>
           </View>
         </Button>
       </View>

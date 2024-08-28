@@ -1,9 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/login";
-import TabRoutes from "./tab.routes";
 import { StyleSheet, Text, View } from "react-native";
-import { Button } from "../components/button";
-import { AntDesign } from "@expo/vector-icons";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import TakeMedicineScreen from "../screens/take-medicine";
@@ -11,10 +8,11 @@ import MeasurePressureScreen from "../screens/measure-pressure";
 import ListOfVideosScreen from "../screens/list-of-videos";
 import ListMedicineScreen from "../screens/list-medicine";
 import RegisterMedicineScreen from "../screens/register-medicine";
-import InitialScreen from "../screens/inital";
+import InitialScreen from "../screens/initial";
 import RegisterScreen from "../screens/register";
 import HomeScreen from "../screens/home";
 import { colors } from "../theme/colors";
+import { BackButton } from "../components/back-button";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -88,7 +86,12 @@ const StackRoutes = () => {
           headerShown: true,
           header(props) {
             return (
-              <></>
+              <>
+                <BackButton variant="dicas" onPress={props.navigation.goBack} />
+                <View style={style.subtitleDicas}>
+                  <Text style={style.subtitle}>Dicas</Text>
+                </View>
+              </>
             );
           },
         }}
@@ -119,7 +122,7 @@ const StackRoutes = () => {
           headerShown: true,
           header(props) {
             return (
-              <BackButton onPress={props.navigation.goBack} />
+              <></>
             );
           },
         }}
@@ -129,23 +132,16 @@ const StackRoutes = () => {
 }
 
 const style = StyleSheet.create({
-  header: {
-    alignItems: "center",
-    height: "100%",
-    flexDirection: "row",
-    gap: 20,
-    paddingHorizontal: 20,
-  },
-  text: {
-    fontFamily: fontFamily.medium,
-    fontSize: fontSize.lg,
-  },
   subtitleRemedio: {
     backgroundColor: colors.tertiary,
     paddingBottom: 30,
   },
   subtitlePressao: {
     backgroundColor: colors.pink,
+    paddingBottom: 30,
+  },
+  subtitleDicas: {
+    backgroundColor: colors.lightBlue,
     paddingBottom: 30,
   },
   subtitle: {
@@ -155,22 +151,5 @@ const style = StyleSheet.create({
     paddingLeft: 25
   }
 });
-
-
-type BackButtonProps = {
-  onPress: () => void;
-  variant?: "dicas" | "pressao" | "remedio" | "secondary";
-}
-
-const BackButton = ({ onPress, variant = "secondary" }: BackButtonProps) => {
-  return (
-    <Button size="backButton" variant={variant} onPress={onPress}>
-      <View style={style.header}>
-        <AntDesign name="arrowleft" size={24} color="black" />
-        <Text style={style.text}>Voltar</Text>
-      </View>
-    </Button>
-  );
-};
 
 export default StackRoutes;

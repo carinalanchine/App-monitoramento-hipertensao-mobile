@@ -20,13 +20,13 @@ const InitialScreen = ({ navigation }: InitialScreenProps) => {
           <Image source={InitalImage} style={styles.image} />
         </View>
 
-        <Text style={styles.title}>Olá, bem-vindo</Text>
+        <Text style={styles.title}>Olá, bem-vindo!</Text>
 
         <View style={styles.buttonsContainer}>
           <Button variant="primary" size="full" onPress={() => navigation.navigate("login")}>
             <View style={styles.buttonContent}>
               <Text style={styles.textButtonEntrar}>
-                entrar
+                Entrar
               </Text>
             </View>
           </Button>
@@ -34,7 +34,7 @@ const InitialScreen = ({ navigation }: InitialScreenProps) => {
           <Button variant="outlinePrimary" size="full" onPress={() => navigation.navigate("register")}>
             <View style={styles.buttonContent}>
               <Text style={styles.textButtonCadastrar}>
-                cadastrar
+                Cadastrar
               </Text>
             </View>
           </Button>

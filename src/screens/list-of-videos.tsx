@@ -13,15 +13,15 @@ const extractVideoId = (link: string) => {
 const ArrayVideos = [
   {
     link: "https://www.youtube.com/watch?v=iPkWdp4irnE&ab_channel=HospitalIsraelitaAlbertEinstein",
-    title: "Titulo"
+    title: "Titulo1"
   },
   {
     link: "https://www.youtube.com/watch?v=WRkbUg86HDs&ab_channel=Dr.SamuelDalleLaste",
-    title: "Titulo"
+    title: "Titulo2"
   },
   {
     link: "https://www.youtube.com/watch?v=dKSvsAZttr4&ab_channel=Dr.RobertoYano",
-    title: "Titulo"
+    title: "Titulo3"
   }
 ]
 
@@ -31,22 +31,20 @@ const ListOfVideosScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.textTitle}>
-        Vídeos
-      </Text>
 
       <FlatList
         style={styles.listVideos}
         data={ArrayVideos}
         renderItem={({ item }) =>
           <View style={styles.videoPlayer}>
+            <Text style={styles.textTitleVideo}>{item.title}</Text>
             <YoutubeIframe
               videoId={extractVideoId(item.link)}
               height={video_height}
               width={width - 30}
               play={false}
             />
-            <Text style={styles.textTitleVideo}>{item.title}</Text>
+
           </View>}
       />
 
@@ -63,7 +61,7 @@ const styles = StyleSheet.create({
   textTitle: {
     fontFamily: fontFamily.bold,
     fontSize: fontSize.xl,
-    marginTop: 30
+    marginTop: 1
   },
   videoPlayer: {
     gap: 5,
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
   listVideos: {
-    marginTop: 36
+    marginTop: 25
   },
   textTitleVideo: {
     position: "absolute",

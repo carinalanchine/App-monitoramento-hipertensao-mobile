@@ -4,7 +4,7 @@ import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 
 type InputProps = {
-  label: string;
+  label?: string;
   value?: string;
   placeholder: string;
   onChangeText?: (text: string) => void;
