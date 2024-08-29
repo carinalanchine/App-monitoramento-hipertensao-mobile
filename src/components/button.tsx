@@ -5,10 +5,9 @@ import { colors } from "../theme/colors";
 type ButtonProps = {
   children: ReactNode;
   onPress?: () => void;
-  variant: "primary" | "destructive" | "outlinePrimary" |
-  "outlineDestructive" | "default" | "secondary" |
-  "dicas" | "pressao" | "remedio";
-  size: "full" | "icon" | "md" | "menuCard" | "backButton";
+  variant: "primary" | "destructive" | "default" |
+  "lightBlue" | "pink" | "tertiary" | "outline" | "secondary";
+  size: "full" | "md" | "menuCard" | "backButton";
 }
 
 export const Button = (input: ButtonProps) => {
@@ -23,17 +22,20 @@ export const Button = (input: ButtonProps) => {
 }
 
 const stylesVariant = StyleSheet.create({
-  dicas: {
+  lightBlue: {
     backgroundColor: colors.lightBlue
   },
-  remedio: {
+  tertiary: {
     backgroundColor: colors.tertiary,
   },
-  pressao: {
+  pink: {
     backgroundColor: colors.pink
   },
   primary: {
     backgroundColor: colors.primary,
+  },
+  secondary: {
+    backgroundColor: colors.secondary
   },
   destructive: {
     backgroundColor: colors.red300,
@@ -41,19 +43,11 @@ const stylesVariant = StyleSheet.create({
   default: {
     backgroundColor: colors.gray400,
   },
-  outlinePrimary: {
+  outline: {
     backgroundColor: colors.white,
     borderColor: colors.black,
     borderWidth: 1,
   },
-  outlineDestructive: {
-    backgroundColor: colors.white,
-    borderColor: colors.red600,
-    borderWidth: 1,
-  },
-  secondary: {
-    backgroundColor: colors.secondary,
-  }
 })
 
 const stylesSize = StyleSheet.create({
@@ -63,14 +57,9 @@ const stylesSize = StyleSheet.create({
     borderRadius: 100,
   },
   md: {
-    width: 125,
+    width: 135,
     height: 48,
     borderRadius: 100,
-  },
-  icon: {
-    width: 70,
-    height: 70,
-    borderRadius: 200,
   },
   menu: {
     width: 300,
@@ -87,18 +76,16 @@ const variantStyles = {
   primary: stylesVariant.primary,
   destructive: stylesVariant.destructive,
   default: stylesVariant.default,
-  outlinePrimary: stylesVariant.outlinePrimary,
-  outlineDestructive: stylesVariant.outlineDestructive,
+  outline: stylesVariant.outline,
+  tertiary: stylesVariant.tertiary,
   secondary: stylesVariant.secondary,
-  dicas: stylesVariant.dicas,
-  remedio: stylesVariant.remedio,
-  pressao: stylesVariant.pressao,
+  lightBlue: stylesVariant.lightBlue,
+  pink: stylesVariant.pink,
 }
 
 const sizeStyles = {
   full: stylesSize.full,
   md: stylesSize.md,
-  icon: stylesSize.icon,
   menuCard: stylesSize.menu,
   backButton: stylesSize.backButton,
 }

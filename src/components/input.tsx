@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.md,
     position: "relative",
-    top: -78,
+    top: -85,
     marginLeft: -5,
     paddingHorizontal: 10,
     backgroundColor: colors.secondary,

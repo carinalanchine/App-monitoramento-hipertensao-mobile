@@ -3,7 +3,6 @@ import LoginScreen from "../screens/login";
 import { StyleSheet, Text, View } from "react-native";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
-import TakeMedicineScreen from "../screens/take-medicine";
 import MeasurePressureScreen from "../screens/measure-pressure";
 import ListOfVideosScreen from "../screens/list-of-videos";
 import ListMedicineScreen from "../screens/list-medicine";
@@ -19,7 +18,6 @@ export type RootStackParamList = {
   login: undefined;
   register: undefined;
   main: undefined;
-  takeMedicine: undefined;
   measurePressure: undefined;
   listOfVideos: undefined;
   listMedicine: undefined;
@@ -35,6 +33,7 @@ const StackRoutes = () => {
         headerShown: false
       }}
     >
+
       <Stack.Screen
         name="initial"
         component={InitialScreen}
@@ -47,18 +46,9 @@ const StackRoutes = () => {
         name="login"
         component={LoginScreen}
       />
-      <Stack.Screen name="main" component={HomeScreen} />
       <Stack.Screen
-        name="takeMedicine"
-        component={TakeMedicineScreen}
-        options={{
-          headerShown: true,
-          header(props) {
-            return (
-              <BackButton onPress={props.navigation.goBack} />
-            );
-          },
-        }}
+        name="main"
+        component={HomeScreen}
       />
 
       <Stack.Screen
@@ -69,9 +59,9 @@ const StackRoutes = () => {
           header(props) {
             return (
               <>
-                <BackButton variant="pressao" onPress={props.navigation.goBack} />
-                <View style={style.subtitlePressao}>
-                  <Text style={style.subtitle}>Medir pressão</Text>
+                <BackButton variant="pink" onPress={props.navigation.goBack} />
+                <View style={styles.subtitlePressao}>
+                  <Text style={styles.subtitle}>Medir pressão</Text>
                 </View>
               </>
             );
@@ -87,9 +77,9 @@ const StackRoutes = () => {
           header(props) {
             return (
               <>
-                <BackButton variant="dicas" onPress={props.navigation.goBack} />
-                <View style={style.subtitleDicas}>
-                  <Text style={style.subtitle}>Dicas</Text>
+                <BackButton variant="lightBlue" onPress={props.navigation.goBack} />
+                <View style={styles.subtitleDicas}>
+                  <Text style={styles.subtitle}>Dicas</Text>
                 </View>
               </>
             );
@@ -105,9 +95,9 @@ const StackRoutes = () => {
           header(props) {
             return (
               <>
-                <BackButton variant="remedio" onPress={props.navigation.goBack} />
-                <View style={style.subtitleRemedio}>
-                  <Text style={style.subtitle}>Remédios</Text>
+                <BackButton variant="tertiary" onPress={props.navigation.goBack} />
+                <View style={styles.subtitleRemedio}>
+                  <Text style={styles.subtitle}>Remédios</Text>
                 </View>
               </>
             );
@@ -118,20 +108,13 @@ const StackRoutes = () => {
       <Stack.Screen
         name="registerMedicine"
         component={RegisterMedicineScreen}
-        options={{
-          headerShown: true,
-          header(props) {
-            return (
-              <></>
-            );
-          },
-        }}
       />
+
     </Stack.Navigator>
   );
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   subtitleRemedio: {
     backgroundColor: colors.tertiary,
     paddingBottom: 30,

@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
+import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -11,6 +11,8 @@ import { ProgressStep } from "../components/progress-step";
 import { BackButton } from "../components/back-button";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
+import { StatusBarComponent } from "../components/status-bar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
@@ -50,7 +52,6 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
       case 2:
         setForm({ ...form, dosage: text })
         break;
-
       case 3:
         setForm({ ...form, interval: text })
         break;
@@ -73,7 +74,10 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   return (
     <>
       <BackButton variant='secondary' onPress={() => handleBackButton()} />
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
+
+        <StatusBarComponent variant="secondary" />
+
         <ScrollView style={styles.content}>
 
           <View style={styles.steps}>
@@ -99,22 +103,22 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
         {step == 3 ?
           <View style={styles.button}>
-            <Button size="full" variant="remedio">
+            <Button size="full" variant="tertiary">
               <View style={styles.buttonContent}>
-                <Text>Concluir</Text>
+                <Text style={styles.textButton}>Concluir</Text>
               </View>
             </Button>
           </View> :
           <View style={styles.button}>
-            <Button size="full" variant="remedio" onPress={() => setStep(step + 1)}>
+            <Button size="full" variant="tertiary" onPress={() => setStep(step + 1)}>
               <View style={styles.buttonContent}>
-                <Text>Próximo</Text>
+                <Text style={styles.textButton}>Próximo</Text>
               </View>
             </Button>
           </View>
         }
 
-      </View >
+      </SafeAreaView >
     </>
   )
 }
@@ -159,6 +163,10 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bold,
     marginBottom: 36,
     paddingHorizontal: 20,
+  },
+  textButton: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.regular,
   },
   containerInput: {
     paddingHorizontal: 20,

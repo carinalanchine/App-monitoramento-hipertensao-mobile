@@ -6,21 +6,21 @@ import { fontSize } from "../theme/font-size";
 
 type BackButtonProps = {
   onPress: () => void;
-  variant?: "dicas" | "pressao" | "remedio" | "secondary";
+  variant: "lightBlue" | "pink" | "tertiary" | "secondary";
 }
 
 export const BackButton = (input: BackButtonProps) => {
   return (
     <Button size="backButton" variant={input.variant} onPress={input.onPress}>
-      <View style={style.header}>
+      <View style={styles.header}>
         <AntDesign name="arrowleft" size={24} color="black" />
-        <Text style={style.text}>Voltar</Text>
+        <Text style={styles.text}>Voltar</Text>
       </View>
     </Button>
   )
 }
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     height: "100%",

@@ -1,16 +1,17 @@
-import { View, StyleSheet, Text, ScrollView, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { fontSize } from "../theme/font-size";
 import { fontFamily } from "../theme/font-family";
-import { Ionicons } from "@expo/vector-icons";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
+import { StatusBarComponent } from "../components/status-bar";
+import { useToast } from "react-native-toast-notifications";
 
 type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicine'>;
 
@@ -18,6 +19,40 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
+  const toast = useToast();
+  const token = 'aaa';
+
+  const deleteMedicine = async () => {
+    try {
+      const response = await fetch('http://192.168.0.112:3333/medicine/', {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          id: medicineSelected.id
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status === 'success') {
+        toast.show("Remédio deletado", {
+          type: "success",
+        });
+        navigation.navigate("main");
+      }
+
+      else
+        toast.show("Erro ao deletar remédio", {
+          type: "danger",
+        });
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const medicines: IMedicine[] = [
     {
@@ -52,6 +87,8 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <StatusBarComponent variant="tertiary" />
 
       <ModalComponent
         visible={modalVisible}
@@ -121,7 +158,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       />
 
       <View style={styles.iconButton}>
-        <Button variant="remedio" size="md" onPress={() => navigation.navigate("registerMedicine")}>
+        <Button variant="tertiary" size="md" onPress={() => navigation.navigate("registerMedicine")}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButton}>Novo remédio</Text>
           </View>
@@ -135,7 +172,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingTop: 20,
+    paddingTop: 10,
   },
   containerCard: {
     paddingHorizontal: 30,
@@ -150,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
   },
   textButton: {
-    fontFamily: fontFamily.medium,
+    fontFamily: fontFamily.regular,
     fontSize: fontSize.md,
   },
   iconButton: {

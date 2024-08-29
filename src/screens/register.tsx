@@ -11,6 +11,7 @@ import { fontFamily } from "../theme/font-family";
 import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
+import { StatusBarComponent } from "../components/status-bar";
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'register'>;
 
@@ -24,6 +25,38 @@ type FormRegister = {
 const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [form, setForm] = useState<FormRegister | null>(null);
   const toast = useToast();
+
+  const registerPatient = async () => {
+    try {
+      const response = await fetch('http://192.168.0.112:3333/patient/', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cpf: form.cpf,
+          name: form.nome,
+          password: form.password,
+          hospital_id: "8af1c936-2770-4efb-ad2c-856a2b89fa65"
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status == 'success') {
+        toast.show("Cadastro realizado com sucesso!", {
+          type: "success",
+        });
+        navigation.navigate("main");
+      }
+
+      else
+        toast.show("Erro ao realizar cadastro", {
+          type: "danger",
+        });
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleRegister = () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password || !form.verifyPassword) {
@@ -42,10 +75,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       return
     }
 
-    toast.show("Cadastro realizado com sucesso!", {
-      type: "success",
-    });
-    navigation.navigate("main");
+    registerPatient();
   };
 
   const maskCpf = (value: string) => {
@@ -62,7 +92,10 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+
+      <StatusBarComponent variant="secondary" />
+
+      <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>
           <Image source={Logo} style={styles.image} />
         </View>
@@ -126,8 +159,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingHorizontal: 20,
     marginBottom: 20
+  },
+  scroll: {
+    paddingHorizontal: 20,
   },
   image: {
     height: 142,
@@ -152,6 +187,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     gap: 10,
+    paddingHorizontal: 20,
   },
   buttonContent: {
     justifyContent: 'center',

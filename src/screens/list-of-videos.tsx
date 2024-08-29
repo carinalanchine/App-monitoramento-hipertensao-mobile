@@ -3,6 +3,7 @@ import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
+import { StatusBarComponent } from "../components/status-bar";
 
 const extractVideoId = (link: string) => {
   const videoId = link.split("v=")[1].split("&")[0];
@@ -32,6 +33,8 @@ const ListOfVideosScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
 
+      <StatusBarComponent variant="lightBlue" />
+
       <FlatList
         style={styles.listVideos}
         data={ArrayVideos}
@@ -56,7 +59,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingHorizontal: 20
   },
   textTitle: {
     fontFamily: fontFamily.bold,
@@ -69,7 +71,8 @@ const styles = StyleSheet.create({
     height: 250,
   },
   listVideos: {
-    marginTop: 25
+    marginTop: 25,
+    paddingHorizontal: 20
   },
   textTitleVideo: {
     position: "absolute",

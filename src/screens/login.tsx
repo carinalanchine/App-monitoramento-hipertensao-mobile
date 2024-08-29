@@ -11,6 +11,7 @@ import { fontFamily } from "../theme/font-family";
 import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
+import { StatusBarComponent } from "../components/status-bar";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
 
@@ -23,6 +24,36 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [form, setForm] = useState<FormLogin | null>(null);
   const toast = useToast();
 
+  const loginPatient = async () => {
+    try {
+      const response = await fetch('http://192.168.0.112:3333/login/', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cpf: form.cpf,
+          password: form.password
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status === 'success') {
+        toast.show("Login realizado com sucesso!", {
+          type: "success",
+        });
+        navigation.navigate("main");
+      }
+
+      else
+        toast.show("Erro ao realizar login", {
+          type: "danger",
+        });
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleLogin = () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
       toast.show("Preencha todos os campos", {
@@ -32,10 +63,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       return
     };
 
-    toast.show("Login realizado com sucesso!", {
-      type: "success",
-    });
-    navigation.navigate("main");
+    loginPatient();
   };
 
   const maskCpf = (value: string) => {
@@ -52,6 +80,9 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <StatusBarComponent variant="secondary" />
+
       <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>
           <Image source={Logo} style={styles.image} />
@@ -104,10 +135,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingHorizontal: 20,
     marginBottom: 20
   },
   scroll: {
+    paddingHorizontal: 20,
     flex: 1,
   },
   image: {
@@ -132,6 +163,7 @@ const styles = StyleSheet.create({
     gap: 20
   },
   buttonsContainer: {
+    paddingHorizontal: 20,
     gap: 10,
   },
   buttonContent: {

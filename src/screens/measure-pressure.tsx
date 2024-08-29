@@ -1,14 +1,10 @@
-import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
+import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
-import Input from "../components/input";
 import { useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
-import NumberPlease from 'react-native-number-please';
-import WheelPicker from 'react-native-wheely';
-import { Picker } from '@react-native-picker/picker';
-import { format, subHours } from "date-fns";
+import { StatusBarComponent } from "../components/status-bar";
 
 type FormPressao = {
   date: string;
@@ -22,6 +18,9 @@ const MeasurePressureScreen = () => {
 
   return (
     <View style={styles.container}>
+
+      <StatusBarComponent variant="pink" />
+
       <ScrollView style={styles.content}>
         <View style={styles.textContainer}>
           <Text style={styles.text}>sistólica</Text>
@@ -29,9 +28,9 @@ const MeasurePressureScreen = () => {
         </View>
 
       </ScrollView >
-      <Button size="full" variant="pressao">
+      <Button size="full" variant="pink">
         <View style={styles.buttonContent}>
-          <Text>Salvar</Text>
+          <Text style={styles.textButton}>Salvar</Text>
         </View>
       </Button>
 
@@ -62,10 +61,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 100,
   },
-  textMedirPressao: {
-    fontSize: fontSize.xl,
-    fontFamily: fontFamily.bold,
-    marginBottom: 36
+  textButton: {
+    fontSize: fontSize.md,
+    fontFamily: fontFamily.regular,
   },
   containerInput: {
     marginTop: 30,

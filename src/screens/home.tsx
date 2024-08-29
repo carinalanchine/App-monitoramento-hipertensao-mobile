@@ -5,40 +5,42 @@ import { Button } from "../components/button";
 import { Image } from "react-native";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Fontisto } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import Dicas from "../../assets/dicas.png";
 import Remedio from "../../assets/remedio.png";
 import Pressao from "../../assets/pressao.png";
+import { StatusBarComponent } from "../components/status-bar";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'main'>;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+
+      <StatusBarComponent variant="secondary" />
+
+      <ScrollView style={styles.scroll}>
         <Text style={styles.title}>Olá, Carina!</Text>
         <Text style={styles.text}>Serviços</Text>
 
         <View style={styles.containerButtons}>
-          <Button variant="dicas" size="menuCard" onPress={() => navigation.navigate("listOfVideos")}>
+          <Button variant="lightBlue" size="menuCard" onPress={() => navigation.navigate("listOfVideos")}>
             <View style={styles.buttonContent}>
               <Image source={Dicas} style={styles.image} />
               <Text style={styles.textButton}>Dicas</Text>
             </View>
           </Button>
 
-          <Button variant="pressao" size="menuCard" onPress={() => navigation.navigate("measurePressure")}>
+          <Button variant="pink" size="menuCard" onPress={() => navigation.navigate("measurePressure")}>
             <View style={styles.buttonContent}>
               <Image source={Pressao} style={styles.image} />
               <Text style={styles.textButton}>Pressão</Text>
             </View>
           </Button>
 
-          <Button variant="remedio" size="menuCard" onPress={() => navigation.navigate("listMedicine")}>
+          <Button variant="tertiary" size="menuCard" onPress={() => navigation.navigate("listMedicine")}>
             <View style={styles.buttonContent}>
               <Image source={Remedio} style={styles.image} />
               <Text style={styles.textButton}>Remédios</Text>
@@ -53,8 +55,10 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     backgroundColor: colors.secondary,
+  },
+  scroll: {
+    paddingHorizontal: 20,
   },
   image: {
     height: 150,
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   textButton: {
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.medium,
     fontSize: fontSize.lg,
   },
   buttonContent: {

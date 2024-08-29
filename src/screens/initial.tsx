@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, ScrollView, StatusBar } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -8,6 +8,7 @@ import { Image } from "react-native";
 import { fontSize } from "../theme/font-size";
 import { fontFamily } from "../theme/font-family";
 import { Button } from "../components/button";
+import { StatusBarComponent } from "../components/status-bar";
 
 type InitialScreenProps = NativeStackScreenProps<RootStackParamList, 'initial'>;
 
@@ -15,6 +16,9 @@ const InitialScreen = ({ navigation }: InitialScreenProps) => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <StatusBarComponent variant="secondary" />
+
       <ScrollView>
         <View style={styles.containerImage}>
           <Image source={InitalImage} style={styles.image} />
@@ -31,7 +35,7 @@ const InitialScreen = ({ navigation }: InitialScreenProps) => {
             </View>
           </Button>
 
-          <Button variant="outlinePrimary" size="full" onPress={() => navigation.navigate("register")}>
+          <Button variant="outline" size="full" onPress={() => navigation.navigate("register")}>
             <View style={styles.buttonContent}>
               <Text style={styles.textButtonCadastrar}>
                 Cadastrar
