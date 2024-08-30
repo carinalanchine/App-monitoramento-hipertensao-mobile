@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { getData, storeData } from "../util/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -12,6 +13,7 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
+import { URL_BASE } from "../util/constants";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
 
@@ -26,7 +28,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
   const loginPatient = async () => {
     try {
-      const response = await fetch('http://192.168.0.112:3333/login/', {
+      const response = await fetch(URL_BASE + '/login/', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -41,16 +43,17 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         toast.show("Login realizado com sucesso!", {
           type: "success",
         });
+
         navigation.navigate("main");
       }
 
       else
-        toast.show("Erro ao realizar login", {
-          type: "danger",
-        });
+        throw new Error();
 
     } catch (error) {
-      console.error(error);
+      toast.show("Erro ao realizar login", {
+        type: "danger",
+      });
     }
   };
 
@@ -63,7 +66,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       return
     };
 
-    loginPatient();
+    //loginPatient();
+    navigation.navigate("main");
   };
 
   const maskCpf = (value: string) => {

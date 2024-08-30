@@ -27,6 +27,16 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackRoutes = () => {
+
+  /*const handleSignInStatus = async () => {
+    const signIn = await getData('loggedUser');
+    signIn === null ? setIsSignedIn(false) : setIsSignedIn(true);
+  }
+
+  useEffect(() => {
+    handleSignInStatus();
+  });*/
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -46,6 +56,7 @@ const StackRoutes = () => {
         name="login"
         component={LoginScreen}
       />
+
       <Stack.Screen
         name="main"
         component={HomeScreen}

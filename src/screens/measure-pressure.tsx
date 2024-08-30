@@ -1,20 +1,27 @@
 import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
 import { StatusBarComponent } from "../components/status-bar";
+import ScrollPicker from "react-native-wheel-scrollview-picker";
+import React from "react";
 
 type FormPressao = {
   date: string;
-  hour: string;
   sistolica: string;
   diastolica: string;
 }
 
 const MeasurePressureScreen = () => {
   const [form, setForm] = useState<FormPressao | null>(null);
+  const dadosPicker = [...Array(50).keys()]
+
+  const handleSalvar = () => {
+    const today = new Date;
+    setForm({ ...form, date: today.toString() });
+  }
 
   return (
     <View style={styles.container}>
@@ -22,19 +29,52 @@ const MeasurePressureScreen = () => {
       <StatusBarComponent variant="pink" />
 
       <ScrollView style={styles.content}>
+
         <View style={styles.textContainer}>
           <Text style={styles.text}>sistólica</Text>
           <Text style={styles.text}>diastólica</Text>
         </View>
 
-      </ScrollView >
-      <Button size="full" variant="pink">
-        <View style={styles.buttonContent}>
-          <Text style={styles.textButton}>Salvar</Text>
-        </View>
-      </Button>
+        <View style={styles.pickerContainer}>
 
-    </View>
+          <ScrollPicker
+            dataSource={dadosPicker}
+            selectedIndex={20}
+            activeItemTextStyle={styles.activePicker}
+            wrapperHeight={390}
+            itemHeight={78}
+            wrapperBackground={colors.secondary}
+            highlightBorderWidth={0}
+            itemTextStyle={styles.picker}
+            onValueChange={(data) => setForm({ ...form, sistolica: data.toString() })}
+          />
+
+          <ScrollPicker
+            dataSource={dadosPicker}
+            selectedIndex={20}
+            activeItemTextStyle={styles.activePicker}
+            wrapperHeight={390}
+            itemHeight={78}
+            wrapperBackground={colors.secondary}
+            highlightBorderWidth={0}
+            itemTextStyle={styles.picker}
+            onValueChange={(data) => setForm({ ...form, diastolica: data.toString() })}
+          />
+
+        </View>
+
+      </ScrollView >
+
+      <View style={styles.buttonContainer}>
+        <Button size="full" variant="pink" onPress={() => handleSalvar()}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.textButton}>Salvar</Text>
+          </View>
+        </Button>
+      </View>
+
+
+    </View >
   )
 }
 
@@ -42,8 +82,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    paddingHorizontal: 20,
     paddingBottom: 20
+  },
+  pickerContainer: {
+    paddingTop: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 80,
+  },
+  picker: {
+    fontSize: 80,
+    fontFamily: fontFamily.regular,
+    color: colors.gray400
+  },
+  activePicker: {
+    fontSize: 80,
+    fontFamily: fontFamily.regular,
+    color: colors.red600
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
   },
   header: {
     marginTop: '15%',
@@ -51,6 +109,7 @@ const styles = StyleSheet.create({
   },
   content: {
     marginTop: 30,
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: fontSize.xl,

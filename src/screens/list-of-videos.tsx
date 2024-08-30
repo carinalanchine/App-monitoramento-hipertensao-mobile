@@ -14,15 +14,15 @@ const extractVideoId = (link: string) => {
 const ArrayVideos = [
   {
     link: "https://www.youtube.com/watch?v=iPkWdp4irnE&ab_channel=HospitalIsraelitaAlbertEinstein",
-    title: "Titulo1"
+    title: "Hipertensão: o que é, sintomas e principais causas"
   },
   {
     link: "https://www.youtube.com/watch?v=WRkbUg86HDs&ab_channel=Dr.SamuelDalleLaste",
-    title: "Titulo2"
+    title: "A forma certa de tratar PRESSÃO ALTA (HIPERTENSÃO)"
   },
   {
     link: "https://www.youtube.com/watch?v=dKSvsAZttr4&ab_channel=Dr.RobertoYano",
-    title: "Titulo3"
+    title: "3 ERROS QUE O HIPERTENSO NÃO PODE COMETER!"
   }
 ]
 

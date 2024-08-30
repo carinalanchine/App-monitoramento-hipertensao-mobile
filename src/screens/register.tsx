@@ -12,6 +12,7 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
+import { URL_BASE } from "../util/constants";
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'register'>;
 
@@ -28,7 +29,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
 
   const registerPatient = async () => {
     try {
-      const response = await fetch('http://192.168.0.112:3333/patient/', {
+      const response = await fetch(URL_BASE + '/patient/', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
