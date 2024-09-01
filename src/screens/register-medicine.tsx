@@ -13,11 +13,14 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import { StatusBarComponent } from "../components/status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUserStore } from "../store/userStore";
+import { useToast } from "react-native-toast-notifications";
+import { URL_BASE } from "../util/constants";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
 type FormMedicine = {
-  name: string;
+  title: string;
   dosage: string;
   interval: string;
 }
@@ -25,6 +28,8 @@ type FormMedicine = {
 const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => {
   const [form, setForm] = useState<FormMedicine | null>(null);
   const [step, setStep] = useState(1);
+  const toast = useToast();
+  const userStore = useUserStore();
 
   const titleContent = [
     'Nome do remédio',
@@ -38,6 +43,67 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     '8 horas',
   ]
 
+  const registerMedicine = async () => {
+    if (!form?.interval) {
+      toast.show("Preencha o intervalo do remédio", {
+        type: "danger",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(URL_BASE + '/medicine/', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + userStore.token
+        },
+        body: JSON.stringify({
+          title: form.title,
+          dosage: form.dosage,
+          interval: form.interval,
+          patientId: userStore.user.id
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status === 'success') {
+        toast.show("Novo remédio cadastrado", {
+          type: "success",
+        });
+        navigation.navigate("listMedicine");
+      }
+
+      else
+        throw new Error('Erro ao cadastrar remédio');
+
+    } catch (error) {
+      console.error();
+      toast.show("Remédio não cadastrado", {
+        type: "danger",
+      });
+    }
+  };
+
+  const handleProximo = () => {
+    if (step == 1 && !form?.title) {
+      toast.show("Preencha o nome do remédio", {
+        type: "danger",
+      });
+      return;
+    }
+
+    if (step == 2 && !form?.dosage) {
+      toast.show("Preencha a dosagem do remédio", {
+        type: "danger",
+      });
+      return;
+    }
+
+    setStep(step + 1);
+  }
+
   const handleBackButton = () => {
     if (step == 1)
       navigation.navigate("listMedicine");
@@ -47,7 +113,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const handleInput = (text: string) => {
     switch (step) {
       case 1:
-        setForm({ ...form, name: text })
+        setForm({ ...form, title: text })
         break;
       case 2:
         setForm({ ...form, dosage: text })
@@ -61,7 +127,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const handleInputValue = () => {
     switch (step) {
       case 1:
-        return form?.name || ""
+        return form?.title || ""
 
       case 2:
         return form?.dosage || ""
@@ -103,14 +169,14 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
         {step == 3 ?
           <View style={styles.button}>
-            <Button size="full" variant="tertiary">
+            <Button size="full" variant="tertiary" onPress={registerMedicine}>
               <View style={styles.buttonContent}>
                 <Text style={styles.textButton}>Concluir</Text>
               </View>
             </Button>
           </View> :
           <View style={styles.button}>
-            <Button size="full" variant="tertiary" onPress={() => setStep(step + 1)}>
+            <Button size="full" variant="tertiary" onPress={handleProximo}>
               <View style={styles.buttonContent}>
                 <Text style={styles.textButton}>Próximo</Text>
               </View>

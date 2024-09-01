@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { Poppins_400Regular, Poppins_600SemiBold, Poppins_500Medium } from "@expo-google-fonts/poppins";
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import StackRoutes from './src/routes/stack.routes';
 import { ToastProvider } from 'react-native-toast-notifications';

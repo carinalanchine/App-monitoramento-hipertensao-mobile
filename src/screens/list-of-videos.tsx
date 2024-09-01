@@ -4,11 +4,13 @@ import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
 import { StatusBarComponent } from "../components/status-bar";
+import { useState } from "react";
+import { IVideo } from "../interfaces/IVideo";
+import { URL_BASE } from "../util/constants";
 
 const extractVideoId = (link: string) => {
   const videoId = link.split("v=")[1].split("&")[0];
-
-  return videoId
+  return videoId;
 }
 
 const ArrayVideos = [

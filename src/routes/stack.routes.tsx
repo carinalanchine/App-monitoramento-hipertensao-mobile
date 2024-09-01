@@ -12,6 +12,7 @@ import RegisterScreen from "../screens/register";
 import HomeScreen from "../screens/home";
 import { colors } from "../theme/colors";
 import { BackButton } from "../components/back-button";
+import { useUserStore } from "../store/userStore";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -27,15 +28,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackRoutes = () => {
-
-  /*const handleSignInStatus = async () => {
-    const signIn = await getData('loggedUser');
-    signIn === null ? setIsSignedIn(false) : setIsSignedIn(true);
-  }
-
-  useEffect(() => {
-    handleSignInStatus();
-  });*/
+  const isLoggedIn = useUserStore().loggedIn;
 
   return (
     <Stack.Navigator

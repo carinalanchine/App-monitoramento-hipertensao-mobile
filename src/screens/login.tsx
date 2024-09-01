@@ -14,6 +14,8 @@ import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
 import { URL_BASE } from "../util/constants";
+import { useUserStore } from "../store/userStore";
+import { User } from "../interfaces/IUser";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
 
@@ -25,6 +27,7 @@ type FormLogin = {
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [form, setForm] = useState<FormLogin | null>(null);
   const toast = useToast();
+  const userStore = useUserStore();
 
   const loginPatient = async () => {
     try {
@@ -40,6 +43,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       const json = await response.json();
 
       if (json.status === 'success') {
+
+        userStore.setLoggedUser(json.user, json.token);
         toast.show("Login realizado com sucesso!", {
           type: "success",
         });
@@ -66,8 +71,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       return
     };
 
-    //loginPatient();
-    navigation.navigate("main");
+    loginPatient();
+    //navigation.navigate("main");
   };
 
   const maskCpf = (value: string) => {

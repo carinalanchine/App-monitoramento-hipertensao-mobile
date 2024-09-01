@@ -36,7 +36,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           cpf: form.cpf,
           name: form.nome,
           password: form.password,
-          hospital_id: "8af1c936-2770-4efb-ad2c-856a2b89fa65"
+          hospital_id: "17a557d6-697a-450b-b28c-bfdeca6cb23a"
         })
       });
 
@@ -46,7 +46,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         toast.show("Cadastro realizado com sucesso!", {
           type: "success",
         });
-        navigation.navigate("main");
+        navigation.navigate("login");
       }
 
       else

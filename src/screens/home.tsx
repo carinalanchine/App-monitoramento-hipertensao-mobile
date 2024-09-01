@@ -11,10 +11,12 @@ import Dicas from "../../assets/dicas.png";
 import Remedio from "../../assets/remedio.png";
 import Pressao from "../../assets/pressao.png";
 import { StatusBarComponent } from "../components/status-bar";
+import { useUserStore } from "../store/userStore";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'main'>;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
+  const user = useUserStore().user.name;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -22,7 +24,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       <StatusBarComponent variant="secondary" />
 
       <ScrollView style={styles.scroll}>
-        <Text style={styles.title}>Olá, Carina!</Text>
+        <Text style={styles.title}>{'Olá, ' + user + '!'}</Text>
         <Text style={styles.text}>Serviços</Text>
 
         <View style={styles.containerButtons}>

@@ -7,11 +7,13 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
 import { useToast } from "react-native-toast-notifications";
+import { URL_BASE } from "../util/constants";
+import { useUserStore } from "../store/userStore";
 
 type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicine'>;
 
@@ -19,71 +21,69 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
+  const [listMedicines, setListMedicines] = useState<IMedicine[]>();
+  const userStore = useUserStore();
   const toast = useToast();
-  const token = 'aaa';
+
+  useEffect(() => {
+    getMedicines();
+  }, [listMedicines]);
 
   const deleteMedicine = async () => {
     try {
-      const response = await fetch('http://192.168.0.112:3333/medicine/', {
+      const response = await fetch(URL_BASE + '/medicine/' + medicineSelected.id, {
         method: 'DELETE',
         headers: {
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({
-          id: medicineSelected.id
-        })
+          'Authorization': 'Bearer ' + userStore.token
+        }
       });
 
       const json = await response.json();
 
-      if (json.status === 'success') {
+      if (json.status == 200) {
         toast.show("Remédio deletado", {
           type: "success",
         });
-        navigation.navigate("main");
       }
 
       else
-        toast.show("Erro ao deletar remédio", {
-          type: "danger",
-        });
+        throw new Error("Remédio não deletado");
 
     } catch (error) {
       console.error(error);
+      toast.show("Erro ao deletar remédio", {
+        type: "danger",
+      });
     }
   };
 
-  const medicines: IMedicine[] = [
-    {
-      id: "1",
-      title: "Losartana",
-      start: "22/01/2024",
-      interval: "08 horas",
-      dosage: "1 grama",
-    },
-    {
-      id: "2",
-      title: "Losartana",
-      start: "22/03/2024",
-      interval: "08 horas",
-      dosage: "5 gramas",
-    },
-    {
-      id: "3",
-      title: "Losartana",
-      start: "22/03/2024",
-      interval: "08 horas",
-      dosage: "5 gramas",
-    },
-    {
-      id: "4",
-      title: "Losartana",
-      start: "22/03/2024",
-      interval: "08 horas",
-      dosage: "5 gramas",
-    },
-  ]
+  const getMedicines = async () => {
+    try {
+      const response = await fetch(URL_BASE + '/medicine/list/' + userStore.user.id, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + userStore.token
+        }
+      });
+
+      const json = await response.json();
+
+      if (json.status == "success") {
+        setListMedicines(json.medicines);
+      }
+
+      else
+        throw new Error("Erro ao recuperar remédios");
+
+    } catch (error) {
+      console.error(error);
+      toast.show("Erro ao recuperar remédios", {
+        type: "danger",
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,7 +107,8 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
             <View style={stylesModal.containerButton}>
               <Button
                 variant="destructive"
-                size="full">
+                size="full"
+                onPress={deleteMedicine}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.textButton}>Excluir</Text>
                 </View>
@@ -128,7 +129,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       </ModalComponent>
 
       <FlatList
-        data={medicines}
+        data={listMedicines}
         contentContainerStyle={{ gap: 1 }}
         renderItem={({ item }) => (
 
