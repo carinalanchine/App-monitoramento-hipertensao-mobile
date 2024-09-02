@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IUser } from '../interfaces/IUser';
 
-export const storeData = async (key: string, user: string) => {
+/*export const storeData = async (key: string, user: IUser) => {
   try {
     await AsyncStorage.setItem(key, user);
   } catch (error) {
@@ -14,5 +15,23 @@ export const getData = async (key: string) => {
     return value;
   } catch (error) {
     console.error(error);
+  }
+};*/
+
+export const storeObject = async (key: string, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem(key, jsonValue);
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const getObject = async (key: string) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    return JSON.parse(jsonValue);
+  } catch (e) {
+    console.error(e);
   }
 };

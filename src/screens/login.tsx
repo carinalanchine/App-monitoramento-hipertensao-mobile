@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
-import { getData, storeData } from "../util/storage";
+import { View, StyleSheet, Text, ScrollView, ImageURISource } from "react-native";
+import { getObject, storeObject } from "../util/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -15,7 +15,7 @@ import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
 import { URL_BASE } from "../util/constants";
 import { useUserStore } from "../store/userStore";
-import { User } from "../interfaces/IUser";
+import { IUser } from "../interfaces/IUser";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
 
@@ -30,6 +30,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const userStore = useUserStore();
 
   const loginPatient = async () => {
+    console.log("aaa")
     try {
       const response = await fetch(URL_BASE + '/login/', {
         method: 'POST',
@@ -43,22 +44,23 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       const json = await response.json();
 
       if (json.status === 'success') {
-
+        await storeObject("user", json.user);
+        await storeObject("token", json.token);
+        await storeObject("isSignedUp", "true");
         userStore.setLoggedUser(json.user, json.token);
         toast.show("Login realizado com sucesso!", {
           type: "success",
         });
-
-        navigation.navigate("main");
       }
 
       else
-        throw new Error();
+        throw new Error("Erro ao realizar login");
 
     } catch (error) {
       toast.show("Erro ao realizar login", {
         type: "danger",
       });
+      console.error(error);
     }
   };
 

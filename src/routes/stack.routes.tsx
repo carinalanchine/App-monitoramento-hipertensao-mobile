@@ -13,6 +13,7 @@ import HomeScreen from "../screens/home";
 import { colors } from "../theme/colors";
 import { BackButton } from "../components/back-button";
 import { useUserStore } from "../store/userStore";
+import { useState } from "react";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -28,7 +29,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackRoutes = () => {
-  const isLoggedIn = useUserStore().loggedIn;
+  const isSignedIn = useUserStore().signedIn;
 
   return (
     <Stack.Navigator
@@ -37,82 +38,88 @@ const StackRoutes = () => {
       }}
     >
 
-      <Stack.Screen
-        name="initial"
-        component={InitialScreen}
-      />
-      <Stack.Screen
-        name="register"
-        component={RegisterScreen}
-      />
-      <Stack.Screen
-        name="login"
-        component={LoginScreen}
-      />
+      {!isSignedIn ? (
+        <>
+          <Stack.Screen
+            name="initial"
+            component={InitialScreen}
+          />
+          <Stack.Screen
+            name="register"
+            component={RegisterScreen}
+          />
+          <Stack.Screen
+            name="login"
+            component={LoginScreen}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="main"
+            component={HomeScreen}
+          />
 
-      <Stack.Screen
-        name="main"
-        component={HomeScreen}
-      />
+          <Stack.Screen
+            name="measurePressure"
+            component={MeasurePressureScreen}
+            options={{
+              headerShown: true,
+              header(props) {
+                return (
+                  <>
+                    <BackButton variant="pink" onPress={props.navigation.goBack} />
+                    <View style={styles.subtitlePressao}>
+                      <Text style={styles.subtitle}>Medir pressão</Text>
+                    </View>
+                  </>
+                );
+              },
+            }}
+          />
 
-      <Stack.Screen
-        name="measurePressure"
-        component={MeasurePressureScreen}
-        options={{
-          headerShown: true,
-          header(props) {
-            return (
-              <>
-                <BackButton variant="pink" onPress={props.navigation.goBack} />
-                <View style={styles.subtitlePressao}>
-                  <Text style={styles.subtitle}>Medir pressão</Text>
-                </View>
-              </>
-            );
-          },
-        }}
-      />
+          <Stack.Screen
+            name="listOfVideos"
+            component={ListOfVideosScreen}
+            options={{
+              headerShown: true,
+              header(props) {
+                return (
+                  <>
+                    <BackButton variant="lightBlue" onPress={props.navigation.goBack} />
+                    <View style={styles.subtitleDicas}>
+                      <Text style={styles.subtitle}>Dicas</Text>
+                    </View>
+                  </>
+                );
+              },
+            }}
+          />
 
-      <Stack.Screen
-        name="listOfVideos"
-        component={ListOfVideosScreen}
-        options={{
-          headerShown: true,
-          header(props) {
-            return (
-              <>
-                <BackButton variant="lightBlue" onPress={props.navigation.goBack} />
-                <View style={styles.subtitleDicas}>
-                  <Text style={styles.subtitle}>Dicas</Text>
-                </View>
-              </>
-            );
-          },
-        }}
-      />
+          <Stack.Screen
+            name="listMedicine"
+            component={ListMedicineScreen}
+            options={{
+              headerShown: true,
+              header(props) {
+                return (
+                  <>
+                    <BackButton variant="tertiary" onPress={props.navigation.goBack} />
+                    <View style={styles.subtitleRemedio}>
+                      <Text style={styles.subtitle}>Remédios</Text>
+                    </View>
+                  </>
+                );
+              },
+            }}
+          />
 
-      <Stack.Screen
-        name="listMedicine"
-        component={ListMedicineScreen}
-        options={{
-          headerShown: true,
-          header(props) {
-            return (
-              <>
-                <BackButton variant="tertiary" onPress={props.navigation.goBack} />
-                <View style={styles.subtitleRemedio}>
-                  <Text style={styles.subtitle}>Remédios</Text>
-                </View>
-              </>
-            );
-          },
-        }}
-      />
-
-      <Stack.Screen
-        name="registerMedicine"
-        component={RegisterMedicineScreen}
-      />
+          <Stack.Screen
+            name="registerMedicine"
+            component={RegisterMedicineScreen}
+          />
+        </>
+      )}
 
     </Stack.Navigator>
   );

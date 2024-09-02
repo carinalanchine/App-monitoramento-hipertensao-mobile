@@ -7,7 +7,7 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
@@ -21,12 +21,16 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
-  const [listMedicines, setListMedicines] = useState<IMedicine[]>();
+  const [listMedicines, setListMedicines] = useState<IMedicine[]>(null);
+  const [noMedicines, setNoMedicines] = useState(false);
   const userStore = useUserStore();
   const toast = useToast();
 
   useEffect(() => {
-    getMedicines();
+    const getList = async () => {
+      await getMedicines();
+    }
+    getList();
   }, [listMedicines]);
 
   const deleteMedicine = async () => {
@@ -42,6 +46,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       const json = await response.json();
 
       if (json.status == 200) {
+        setModalVisible(!modalVisible);
         toast.show("Remédio deletado", {
           type: "success",
         });
@@ -71,6 +76,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
       const json = await response.json();
 
       if (json.status == "success") {
+        json.medicines.length == 0 ? setNoMedicines(true) : setNoMedicines(false);
         setListMedicines(json.medicines);
       }
 
@@ -128,35 +134,47 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
       </ModalComponent>
 
-      <FlatList
-        data={listMedicines}
-        contentContainerStyle={{ gap: 1 }}
-        renderItem={({ item }) => (
-
+      {noMedicines ? (
+        <>
           <View style={styles.containerCard}>
             <Card variant="secondary">
-              <View style={styles.contentCard}>
-                <Text style={styles.textCard}>{item.title}</Text>
-                <View>
-                  <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
-                  <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
-                </View>
-
-                <Button
-                  variant="destructive"
-                  size="full"
-                  onPress={() => { setMedicineSelected(item); setModalVisible(true) }}>
-                  <View style={styles.buttonContent}>
-                    <Text style={styles.textButton}>Excluir</Text>
-                  </View>
-                </Button>
-              </View>
+              <Text style={stylesModal.text}>Você ainda não possui remédios cadastrados!</Text>
             </Card>
           </View>
-        )}
+        </>
+      ) : (
+        <>
+          <FlatList
+            data={listMedicines}
+            contentContainerStyle={{ gap: 1 }}
+            renderItem={({ item }) => (
 
-        keyExtractor={(item) => item.id}
-      />
+              <View style={styles.containerCard}>
+                <Card variant="secondary">
+                  <View style={styles.contentCard}>
+                    <Text style={styles.textCard}>{item.title}</Text>
+                    <View>
+                      <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
+                      <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
+                    </View>
+
+                    <Button
+                      variant="destructive"
+                      size="full"
+                      onPress={() => { setMedicineSelected(item); setModalVisible(true) }}>
+                      <View style={styles.buttonContent}>
+                        <Text style={styles.textButton}>Excluir</Text>
+                      </View>
+                    </Button>
+                  </View>
+                </Card>
+              </View>
+            )}
+
+            keyExtractor={(item) => item.id}
+          />
+        </>
+      )}
 
       <View style={styles.iconButton}>
         <Button variant="tertiary" size="md" onPress={() => navigation.navigate("registerMedicine")}>
@@ -165,6 +183,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
           </View>
         </Button>
       </View>
+
     </SafeAreaView>
   );
 }

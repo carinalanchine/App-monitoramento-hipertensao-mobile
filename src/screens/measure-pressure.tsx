@@ -7,21 +7,59 @@ import { Button } from "../components/button";
 import { StatusBarComponent } from "../components/status-bar";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import React from "react";
+import { URL_BASE } from "../util/constants";
+import { useUserStore } from "../store/userStore";
+import { useToast } from "react-native-toast-notifications";
 
 type FormPressao = {
-  date: string;
-  sistolica: string;
-  diastolica: string;
+  sistolica: number;
+  diastolica: number;
 }
 
 const MeasurePressureScreen = () => {
-  const [form, setForm] = useState<FormPressao | null>(null);
+  const [form, setForm] = useState<FormPressao | null>({ sistolica: 20, diastolica: 20 });
   const dadosPicker = [...Array(50).keys()]
+  const userStore = useUserStore();
+  const toast = useToast();
 
   const handleSalvar = () => {
-    const today = new Date;
-    setForm({ ...form, date: today.toString() });
+    registerPressure();
   }
+
+  const registerPressure = async () => {
+    try {
+      const response = await fetch(URL_BASE + '/pressure', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + userStore.token
+        },
+        body: JSON.stringify({
+          systolic: form.sistolica,
+          diastolic: form.diastolica,
+          patientId: userStore.user.id
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status === "success") {
+        toast.show("Pressão salva", {
+          type: "success",
+        });
+      }
+
+      else {
+        throw new Error('Erro ao salvar pressão');
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast.show("Erro ao salvar pressão", {
+        type: "danger",
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -46,7 +84,7 @@ const MeasurePressureScreen = () => {
             wrapperBackground={colors.secondary}
             highlightBorderWidth={0}
             itemTextStyle={styles.picker}
-            onValueChange={(data) => setForm({ ...form, sistolica: data.toString() })}
+            onValueChange={(data) => setForm({ ...form, sistolica: data })}
           />
 
           <ScrollPicker
@@ -58,7 +96,7 @@ const MeasurePressureScreen = () => {
             wrapperBackground={colors.secondary}
             highlightBorderWidth={0}
             itemTextStyle={styles.picker}
-            onValueChange={(data) => setForm({ ...form, diastolica: data.toString() })}
+            onValueChange={(data) => setForm({ ...form, diastolica: data })}
           />
 
         </View>

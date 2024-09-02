@@ -44,6 +44,8 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   ]
 
   const registerMedicine = async () => {
+
+    console.log("userStore.token")
     if (!form?.interval) {
       toast.show("Preencha o intervalo do remédio", {
         type: "danger",
@@ -59,7 +61,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
           'Authorization': 'Bearer ' + userStore.token
         },
         body: JSON.stringify({
-          title: form.title,
+          name: form.title,
           dosage: form.dosage,
           interval: form.interval,
           patientId: userStore.user.id
@@ -75,11 +77,12 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
         navigation.navigate("listMedicine");
       }
 
-      else
+      else {
         throw new Error('Erro ao cadastrar remédio');
+      }
 
     } catch (error) {
-      console.error();
+      console.error(error);
       toast.show("Remédio não cadastrado", {
         type: "danger",
       });

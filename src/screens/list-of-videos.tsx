@@ -4,33 +4,49 @@ import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
 import { StatusBarComponent } from "../components/status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IVideo } from "../interfaces/IVideo";
 import { URL_BASE } from "../util/constants";
+import { useUserStore } from "../store/userStore";
 
 const extractVideoId = (link: string) => {
   const videoId = link.split("v=")[1].split("&")[0];
   return videoId;
 }
 
-const ArrayVideos = [
-  {
-    link: "https://www.youtube.com/watch?v=iPkWdp4irnE&ab_channel=HospitalIsraelitaAlbertEinstein",
-    title: "Hipertensão: o que é, sintomas e principais causas"
-  },
-  {
-    link: "https://www.youtube.com/watch?v=WRkbUg86HDs&ab_channel=Dr.SamuelDalleLaste",
-    title: "A forma certa de tratar PRESSÃO ALTA (HIPERTENSÃO)"
-  },
-  {
-    link: "https://www.youtube.com/watch?v=dKSvsAZttr4&ab_channel=Dr.RobertoYano",
-    title: "3 ERROS QUE O HIPERTENSO NÃO PODE COMETER!"
-  }
-]
-
 const ListOfVideosScreen = () => {
+  const [listVideos, setListVideos] = useState<IVideo[]>(null);
   const { width } = useWindowDimensions();
   const video_height = 250;
+  const userStore = useUserStore();
+
+  useEffect(() => {
+    getVideos();
+  }, []);
+
+  const getVideos = async () => {
+    try {
+      const response = await fetch(URL_BASE + '/video/list/', {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + userStore.token
+        }
+      });
+
+      const json = await response.json();
+
+      if (json.status == "success") {
+        setListVideos(json.videos);
+      }
+
+      else
+        throw new Error("Erro ao recuperar vídeos");
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,12 +55,12 @@ const ListOfVideosScreen = () => {
 
       <FlatList
         style={styles.listVideos}
-        data={ArrayVideos}
+        data={listVideos}
         renderItem={({ item }) =>
           <View style={styles.videoPlayer}>
             <Text style={styles.textTitleVideo}>{item.title}</Text>
             <YoutubeIframe
-              videoId={extractVideoId(item.link)}
+              videoId={extractVideoId(item.url)}
               height={video_height}
               width={width - 30}
               play={false}
