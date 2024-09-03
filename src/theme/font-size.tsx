@@ -4,5 +4,6 @@ export const fontSize = {
   lg: 20,
   xl: 24,
   '2xl': 30,
-  '3xl': 40
+  '3xl': 40,
+  '4xl': 80,
 }

@@ -1,9 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IUser } from '../interfaces/IUser';
 
-/*export const storeData = async (key: string, user: IUser) => {
+export const storeData = async (key: string, value) => {
   try {
-    await AsyncStorage.setItem(key, user);
+    await AsyncStorage.setItem(key, value);
   } catch (error) {
     console.error(error);
   }
@@ -16,7 +15,7 @@ export const getData = async (key: string) => {
   } catch (error) {
     console.error(error);
   }
-};*/
+};
 
 export const storeObject = async (key: string, value) => {
   try {

@@ -3,10 +3,9 @@ import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Input from "../components/input";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
-import { format, subHours } from "date-fns";
 import { ProgressStep } from "../components/progress-step";
 import { BackButton } from "../components/back-button";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -16,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "../store/userStore";
 import { useToast } from "react-native-toast-notifications";
 import { URL_BASE } from "../util/constants";
+import { useNavigation } from "@react-navigation/native";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
@@ -44,8 +44,6 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   ]
 
   const registerMedicine = async () => {
-
-    console.log("userStore.token")
     if (!form?.interval) {
       toast.show("Preencha o intervalo do remédio", {
         type: "danger",
@@ -109,8 +107,9 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
   const handleBackButton = () => {
     if (step == 1)
-      navigation.navigate("listMedicine");
-    else setStep(step - 1);
+      useNavigation().goBack;
+    else
+      setStep(step - 1);
   }
 
   const handleInput = (text: string) => {

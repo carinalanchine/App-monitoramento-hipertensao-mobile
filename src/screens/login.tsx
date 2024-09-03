@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet, Text, ScrollView, ImageURISource } from "react-native";
-import { getObject, storeObject } from "../util/storage";
+import { getObject, storeData, storeObject } from "../util/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -30,7 +30,6 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const userStore = useUserStore();
 
   const loginPatient = async () => {
-    console.log("aaa")
     try {
       const response = await fetch(URL_BASE + '/login/', {
         method: 'POST',
@@ -43,10 +42,10 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       const json = await response.json();
 
-      if (json.status === 'success') {
+      if (json.status === "success") {
         await storeObject("user", json.user);
-        await storeObject("token", json.token);
-        await storeObject("isSignedUp", "true");
+        await storeData("token", json.token);
+        await storeData("isSignedUp", "true");
         userStore.setLoggedUser(json.user, json.token);
         toast.show("Login realizado com sucesso!", {
           type: "success",
@@ -74,7 +73,6 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
     };
 
     loginPatient();
-    //navigation.navigate("main");
   };
 
   const maskCpf = (value: string) => {

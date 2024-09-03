@@ -129,12 +129,12 @@ const styles = StyleSheet.create({
     gap: 80,
   },
   picker: {
-    fontSize: 80,
+    fontSize: fontSize["4xl"],
     fontFamily: fontFamily.regular,
     color: colors.gray400
   },
   activePicker: {
-    fontSize: 80,
+    fontSize: fontSize["4xl"],
     fontFamily: fontFamily.regular,
     color: colors.red600
   },
