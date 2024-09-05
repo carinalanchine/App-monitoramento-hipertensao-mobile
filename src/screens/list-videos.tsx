@@ -12,6 +12,7 @@ import { URL_BASE } from "../util/constants";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import { ModalComponent } from "../components/modal";
+import { Card } from "../components/card";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "listVideos">;
 
@@ -23,6 +24,7 @@ const extractVideoId = (link: string) => {
 const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(true);
   const [listVideos, setListVideos] = useState<IVideo[]>(null);
+  const [noVideos, setNoVideos] = useState(false);
   const { width } = useWindowDimensions();
   const video_height = 250;
   const toast = useToast();
@@ -45,14 +47,15 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
         if (json.status !== "success")
           throw new Error(json.message);
 
-        if (json.total > 0)
+        if (json.total > 0) {
           setListVideos(json.videos);
+          setNoVideos(false);
+        }
 
         else
-          throw new Error("Não há vídeos");
+          setNoVideos(true)
       } catch (error) {
         toast.show(`${error}`, { type: "danger" });
-        navigation.navigate("main");
       } finally {
         setLoading(false);
       }
@@ -72,21 +75,31 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
         <ActivityIndicator size={60} color={colors.gray400} />
       </ModalComponent>
 
-      <FlatList
-        style={styles.listVideos}
-        data={listVideos}
-        renderItem={({ item }) =>
-          <View style={styles.videoPlayer}>
-            <Text style={styles.textTitleVideo}>{item.title}</Text>
-            <YoutubeIframe
-              videoId={extractVideoId(item.url)}
-              height={video_height}
-              width={width - 30}
-              play={false}
-            />
-
-          </View>}
-      />
+      {noVideos ? (
+        <>
+          <View style={styles.containerCard}>
+            <Card variant="secondary">
+              <Text style={styles.text}>Ainda não há dicas disponibilizadas!</Text>
+            </Card>
+          </View>
+        </>
+      ) : (
+        <>
+          <FlatList
+            style={styles.listVideos}
+            data={listVideos}
+            renderItem={({ item }) =>
+              <View style={styles.videoPlayer}>
+                <Text style={styles.textTitleVideo}>{item.title}</Text>
+                <YoutubeIframe
+                  videoId={extractVideoId(item.url)}
+                  height={video_height}
+                  width={width - 30}
+                  play={false}
+                />
+              </View>}
+          />
+        </>)}
 
     </SafeAreaView>
   )
@@ -105,6 +118,15 @@ const styles = StyleSheet.create({
   listVideos: {
     marginTop: 25,
     paddingHorizontal: 20
+  },
+  containerCard: {
+    paddingHorizontal: 30,
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  text: {
+    fontFamily: fontFamily.regular,
+    fontSize: fontSize.lg,
   },
   textTitleVideo: {
     position: "absolute",

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { IUser } from '../interfaces/IUser';
 
 type loggedUser = {
-  user: IUser
+  user: IUser,
   signedIn: boolean,
   token: string,
 

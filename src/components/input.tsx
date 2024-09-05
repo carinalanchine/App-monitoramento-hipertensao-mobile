@@ -2,39 +2,49 @@ import { KeyboardTypeOptions, StyleSheet, Text, TextInput, View } from "react-na
 import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
+import React from "react";
 
 type InputProps = {
   label?: string;
   value?: string;
   placeholder: string;
   onChangeText?: (text: string) => void;
+  onSubmitEditing?: () => void;
+  enterKeyHint?: "next" | "done" | "enter" | "send" | "search" | "previous";
+  autoFocus?: boolean
   secureTextEntry?: boolean;
   editable?: boolean;
   helperText?: string;
   defaultValue?: string;
   valueType?: KeyboardTypeOptions;
+  blurOnSubmit?: boolean;
 }
 
-const Input = ({ label, onChangeText, placeholder, valueType, value, secureTextEntry = false, editable, helperText, defaultValue }: InputProps) => {
+const Input = React.forwardRef<TextInput, InputProps>(({ ...inputProps }, ref) => {
   return (
     <View>
       <TextInput
+        ref={ref}
         style={styles.input}
-        keyboardType={valueType}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        value={value}
-        secureTextEntry={secureTextEntry}
-        editable={editable}
-        defaultValue={defaultValue}
+        blurOnSubmit={inputProps.blurOnSubmit}
+        autoFocus={inputProps.autoFocus}
+        keyboardType={inputProps.valueType}
+        onChangeText={inputProps.onChangeText}
+        placeholder={inputProps.placeholder}
+        value={inputProps.value}
+        enterKeyHint={inputProps.enterKeyHint}
+        secureTextEntry={inputProps.secureTextEntry}
+        editable={inputProps.editable}
+        defaultValue={inputProps.defaultValue}
+        onSubmitEditing={inputProps.onSubmitEditing}
       />
-      <Text style={styles.label}>{label}</Text>
-      {helperText && (
-        <Text style={styles.helperText}>{helperText}</Text>
+      <Text style={styles.label}>{inputProps.label}</Text>
+      {inputProps.helperText && (
+        <Text style={styles.helperText}>{inputProps.helperText}</Text>
       )}
     </View>
   );
-}
+})
 
 const styles = StyleSheet.create({
   input: {

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, StyleSheet, Text, ScrollView, ActivityIndicator } from "react-native";
+import { ReactDOM, useEffect, useRef, useState } from "react";
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -26,6 +26,7 @@ type FormLogin = {
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [form, setForm] = useState<FormLogin | null>(null);
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef<TextInput | null>(null);
   const toast = useToast();
   const userStore = useUserStore();
 
@@ -98,15 +99,21 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
             label="cpf"
             placeholder="111.111.111-11"
             valueType="numeric"
+            enterKeyHint="next"
+            blurOnSubmit={false}
             value={form?.cpf || ""}
+            onSubmitEditing={() => { passwordRef.current.focus() }}
             onChangeText={(text) => maskCpf(text)}
           />
           <Input
+            ref={passwordRef}
             label="senha"
             placeholder="********"
             secureTextEntry
+            enterKeyHint="done"
             value={form?.password || ""}
             onChangeText={(text) => setForm({ ...form, password: text })}
+            onSubmitEditing={handleLogin}
           />
         </View>
       </ScrollView>
@@ -121,7 +128,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
           </View>
         </Button>
 
-        <Button variant="default" size="full" onPress={() => navigation.navigate("initial")}>
+        <Button variant="default" size="full" onPress={() => navigation.goBack()}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonVoltar}>
               Voltar

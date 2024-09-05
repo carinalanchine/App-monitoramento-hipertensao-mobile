@@ -44,14 +44,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     '8 horas',
   ]
 
-  const handleConcluir = async () => {
-    if (!form?.interval) {
-      toast.show("Preencha o intervalo do remédio", {
-        type: "danger",
-      });
-      return;
-    }
-
+  const handleRegister = async () => {
     setLoading(true);
     try {
       const response = await fetch(URL_BASE + '/medicine', {
@@ -75,7 +68,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
         throw new Error(json.message);
 
       toast.show("Remédio cadastrado com sucesso", { type: "success" });
-      navigation.navigate("listMedicines");
+      navigation.goBack();
     } catch (error) {
       toast.show(`${error}`, { type: "danger" });
     } finally {
@@ -83,29 +76,28 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     }
   }
 
-  const handleProximo = () => {
-    if (step == 1 && !form?.title) {
-      toast.show("Preencha o nome do remédio", {
-        type: "danger",
-      });
+  const handleButton = () => {
+    if (step < 3) {
+      if (step == 1 && !form?.title) {
+        toast.show("Preencha o nome do remédio", { type: "danger" });
+        return;
+      }
+
+      if (step == 2 && !form?.dosage) {
+        toast.show("Preencha a dosagem do remédio", { type: "danger" });
+        return;
+      }
+
+      setStep(step + 1);
       return;
     }
 
-    if (step == 2 && !form?.dosage) {
-      toast.show("Preencha a dosagem do remédio", {
-        type: "danger",
-      });
+    if (!form?.interval) {
+      toast.show("Preencha o intervalo do remédio", { type: "danger" });
       return;
     }
 
-    setStep(step + 1);
-  }
-
-  const handleBackButton = () => {
-    if (step == 1)
-      navigation.navigate("listMedicines");
-    else
-      setStep(step - 1);
+    handleRegister();
   }
 
   const handleInput = (text: string) => {
@@ -137,7 +129,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
   return (
     <>
-      <BackButton variant='secondary' onPress={() => handleBackButton()} />
+      <BackButton variant='secondary' onPress={() => step == 1 ? navigation.goBack() : setStep(step - 1)} />
       <SafeAreaView style={styles.container}>
 
         <StatusBarComponent variant="secondary" />
@@ -163,6 +155,10 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
           <View style={styles.inputContainer}>
             <Input
               placeholder={'ex: ' + exContent[step - 1]}
+              blurOnSubmit={false}
+              enterKeyHint={step < 3 ? "next" : "done"}
+              autoFocus={true}
+              onSubmitEditing={handleButton}
               value={handleInputValue()}
               onChangeText={(text) => handleInput(text)}
             >
@@ -171,22 +167,13 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
         </ScrollView >
 
-        {step == 3 ?
-          <View style={styles.button}>
-            <Button size="full" variant="tertiary" onPress={handleConcluir}>
-              <View style={styles.buttonContent}>
-                <Text style={styles.textButton}>Concluir</Text>
-              </View>
-            </Button>
-          </View> :
-          <View style={styles.button}>
-            <Button size="full" variant="tertiary" onPress={handleProximo}>
-              <View style={styles.buttonContent}>
-                <Text style={styles.textButton}>Próximo</Text>
-              </View>
-            </Button>
-          </View>
-        }
+        <View style={styles.button}>
+          <Button size="full" variant="tertiary" onPress={handleButton}>
+            <View style={styles.buttonContent}>
+              <Text style={styles.textButton}>{step < 3 ? "Próximo" : "Concluir"}</Text>
+            </View>
+          </Button>
+        </View>
 
       </SafeAreaView >
     </>

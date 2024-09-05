@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, StyleSheet, Text, ScrollView, ActivityIndicator } from "react-native";
+import { useRef, useState } from "react";
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -28,6 +28,10 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormRegister | null>(null);
   const toast = useToast();
+
+  const cpfRef = useRef<TextInput | null>();
+  const passwordRef = useRef<TextInput | null>();
+  const verifyPasswordRef = useRef<TextInput | null>();
 
   const handleRegister = async () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password || !form.verifyPassword) {
@@ -107,10 +111,17 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         <View style={styles.containerInput}>
           <Input
             label="nome"
+            blurOnSubmit={false}
+            enterKeyHint="next"
+            onSubmitEditing={() => { cpfRef.current.focus() }}
             placeholder="digite seu nome"
             onChangeText={(text) => setForm({ ...form, nome: text })}
           />
           <Input
+            ref={cpfRef}
+            blurOnSubmit={false}
+            enterKeyHint="next"
+            onSubmitEditing={() => { passwordRef.current.focus() }}
             label="cpf"
             placeholder="111.111.111-11"
             valueType="numeric"
@@ -118,6 +129,10 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
             onChangeText={(text) => maskCpf(text)}
           />
           <Input
+            ref={passwordRef}
+            enterKeyHint="next"
+            blurOnSubmit={false}
+            onSubmitEditing={() => { verifyPasswordRef.current.focus() }}
             label="senha"
             placeholder="********"
             secureTextEntry
@@ -125,10 +140,12 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
             onChangeText={(text) => setForm({ ...form, password: text })}
           />
           <Input
+            ref={verifyPasswordRef}
             label="confirmar senha"
             placeholder="********"
             secureTextEntry
             value={form?.verifyPassword || ""}
+            onSubmitEditing={handleRegister}
             onChangeText={(text) => setForm({ ...form, verifyPassword: text })}
           />
         </View>
@@ -144,7 +161,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           </View>
         </Button>
 
-        <Button variant="default" size="full" onPress={() => navigation.navigate("initial")}>
+        <Button variant="default" size="full" onPress={() => navigation.goBack()}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButtonVoltar}>
               Voltar

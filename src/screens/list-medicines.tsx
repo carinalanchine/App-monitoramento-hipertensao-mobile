@@ -7,13 +7,14 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
 import { useToast } from "react-native-toast-notifications";
 import { useUserStore } from "../store/userStore";
 import { URL_BASE } from "../util/constants";
+import { useFocusEffect } from "@react-navigation/native";
 
 type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicines'>;
 
@@ -26,9 +27,11 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const toast = useToast();
   const userStore = useUserStore();
 
-  useEffect(() => {
-    getMedicines();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getMedicines();
+    }, [])
+  )
 
   const getMedicines = async () => {
     setLoading(true);
@@ -62,7 +65,6 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   }
 
   const handleDelete = async () => {
-    setModalVisible(!modalVisible)
     setLoading(true);
     try {
       const response = await fetch(URL_BASE + '/medicine/' + medicineSelected.id, {
@@ -79,6 +81,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
       if (json.status !== "success")
         throw new Error(json.message);
 
+      await getMedicines();
       toast.show("Remédio deletado com sucesso", { type: "success" });
     } catch (error) {
       toast.show(`${error}`, { type: "danger" });
@@ -116,7 +119,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
               <Button
                 variant="destructive"
                 size="full"
-                onPress={handleDelete}>
+                onPress={() => { setModalVisible(!modalVisible); handleDelete() }}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.textButton}>Excluir</Text>
                 </View>
