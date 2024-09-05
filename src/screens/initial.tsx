@@ -10,7 +10,7 @@ import { fontFamily } from "../theme/font-family";
 import { Button } from "../components/button";
 import { StatusBarComponent } from "../components/status-bar";
 
-type InitialScreenProps = NativeStackScreenProps<RootStackParamList, 'initial'>;
+type InitialScreenProps = NativeStackScreenProps<RootStackParamList, "initial">;
 
 const InitialScreen = ({ navigation }: InitialScreenProps) => {
 

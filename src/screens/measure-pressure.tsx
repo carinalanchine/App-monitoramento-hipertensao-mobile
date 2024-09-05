@@ -1,15 +1,16 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native"
+import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
 import { StatusBarComponent } from "../components/status-bar";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import React from "react";
-import { URL_BASE } from "../util/constants";
-import { useUserStore } from "../store/userStore";
 import { useToast } from "react-native-toast-notifications";
+import { useUserStore } from "../store/userStore";
+import { ModalComponent } from "../components/modal";
+import { URL_BASE } from "../util/constants";
 
 type FormPressao = {
   sistolica: number;
@@ -18,19 +19,18 @@ type FormPressao = {
 
 const MeasurePressureScreen = () => {
   const [form, setForm] = useState<FormPressao | null>({ sistolica: 20, diastolica: 20 });
+  const [loading, setLoading] = useState(false);
   const dadosPicker = [...Array(50).keys()]
-  const userStore = useUserStore();
   const toast = useToast();
+  const userStore = useUserStore();
 
-  const handleSalvar = () => {
-    registerPressure();
-  }
-
-  const registerPressure = async () => {
+  const handleSalvar = async () => {
+    setLoading(true);
     try {
       const response = await fetch(URL_BASE + '/pressure', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           "Content-Type": "application/json",
           'Authorization': 'Bearer ' + userStore.token
         },
@@ -43,28 +43,27 @@ const MeasurePressureScreen = () => {
 
       const json = await response.json();
 
-      if (json.status === "success") {
-        toast.show("Pressão salva", {
-          type: "success",
-        });
-      }
+      if (json.status !== "success")
+        throw new Error(json.message);
 
-      else {
-        throw new Error('Erro ao salvar pressão');
-      }
-
+      toast.show("Pressão salva com sucesso", { type: "success" });
     } catch (error) {
-      console.error(error);
-      toast.show("Erro ao salvar pressão", {
-        type: "danger",
-      });
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
 
       <StatusBarComponent variant="pink" />
+
+      <ModalComponent
+        visible={loading}
+        onRequestClose={() => setLoading(!loading)}>
+        <ActivityIndicator size={60} color={colors.gray400} />
+      </ModalComponent>
 
       <ScrollView style={styles.content}>
 
@@ -104,7 +103,7 @@ const MeasurePressureScreen = () => {
       </ScrollView >
 
       <View style={styles.buttonContainer}>
-        <Button size="full" variant="pink" onPress={() => handleSalvar()}>
+        <Button size="full" variant="pink" onPress={handleSalvar}>
           <View style={styles.buttonContent}>
             <Text style={styles.textButton}>Salvar</Text>
           </View>
@@ -141,10 +140,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 20,
   },
-  header: {
-    marginTop: '15%',
-    marginLeft: 30,
-  },
   content: {
     marginTop: 30,
     paddingHorizontal: 20,
@@ -161,10 +156,6 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.regular,
-  },
-  containerInput: {
-    marginTop: 30,
-    gap: 20
   },
   buttonContent: {
     justifyContent: 'center',

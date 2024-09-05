@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, ScrollView, ImageURISource } from "react-native";
-import { getObject, storeData, storeObject } from "../util/storage";
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -13,11 +12,11 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
-import { URL_BASE } from "../util/constants";
 import { useUserStore } from "../store/userStore";
-import { IUser } from "../interfaces/IUser";
+import { ModalComponent } from "../components/modal";
+import { URL_BASE } from "../util/constants";
 
-type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'login'>;
+type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "login">;
 
 type FormLogin = {
   cpf: string;
@@ -26,14 +25,24 @@ type FormLogin = {
 
 const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [form, setForm] = useState<FormLogin | null>(null);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const userStore = useUserStore();
 
-  const loginPatient = async () => {
+  const handleLogin = async () => {
+    if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
+      toast.show("Preencha todos os campos", { type: "danger" });
+      return
+    };
+
+    setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/login/', {
+      const response = await fetch(URL_BASE + '/login', {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Accept: 'application/json',
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           cpf: form.cpf,
           password: form.password
@@ -42,37 +51,16 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
       const json = await response.json();
 
-      if (json.status === "success") {
-        await storeObject("user", json.user);
-        await storeData("token", json.token);
-        await storeData("isSignedUp", "true");
-        userStore.setLoggedUser(json.user, json.token);
-        toast.show("Login realizado com sucesso!", {
-          type: "success",
-        });
-      }
+      if (json.status !== "success")
+        throw new Error(json.message);
 
-      else
-        throw new Error("Erro ao realizar login");
-
+      userStore.setLogin(json.user, json.accessToken);
+      toast.show("Login realizado com sucesso", { type: "success" });
     } catch (error) {
-      toast.show("Erro ao realizar login", {
-        type: "danger",
-      });
-      console.error(error);
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleLogin = () => {
-    if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
-      toast.show("Preencha todos os campos", {
-        type: "danger",
-      });
-
-      return
-    };
-
-    loginPatient();
   };
 
   const maskCpf = (value: string) => {
@@ -91,6 +79,12 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="secondary" />
+
+      <ModalComponent
+        visible={loading}
+        onRequestClose={() => setLoading(!loading)}>
+        <ActivityIndicator size={60} color={colors.gray400} />
+      </ModalComponent>
 
       <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>

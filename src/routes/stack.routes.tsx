@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import MeasurePressureScreen from "../screens/measure-pressure";
-import ListOfVideosScreen from "../screens/list-of-videos";
-import ListMedicineScreen from "../screens/list-medicine";
+import ListVideosScreen from "../screens/list-videos";
+import ListMedicinesScreen from "../screens/list-medicines";
 import RegisterMedicineScreen from "../screens/register-medicine";
 import InitialScreen from "../screens/initial";
 import RegisterScreen from "../screens/register";
@@ -13,7 +13,6 @@ import HomeScreen from "../screens/home";
 import { colors } from "../theme/colors";
 import { BackButton } from "../components/back-button";
 import { useUserStore } from "../store/userStore";
-import { useState } from "react";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -21,8 +20,8 @@ export type RootStackParamList = {
   register: undefined;
   main: undefined;
   measurePressure: undefined;
-  listOfVideos: undefined;
-  listMedicine: undefined;
+  listVideos: undefined;
+  listMedicines: undefined;
   registerMedicine: undefined;
 }
 
@@ -79,8 +78,8 @@ const StackRoutes = () => {
           />
 
           <Stack.Screen
-            name="listOfVideos"
-            component={ListOfVideosScreen}
+            name="listVideos"
+            component={ListVideosScreen}
             options={{
               headerShown: true,
               header(props) {
@@ -97,8 +96,8 @@ const StackRoutes = () => {
           />
 
           <Stack.Screen
-            name="listMedicine"
-            component={ListMedicineScreen}
+            name="listMedicines"
+            component={ListMedicinesScreen}
             options={{
               headerShown: true,
               header(props) {

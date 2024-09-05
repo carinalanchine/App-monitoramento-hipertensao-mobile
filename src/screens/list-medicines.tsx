@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { fontSize } from "../theme/font-size";
@@ -7,67 +7,36 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
 import { useToast } from "react-native-toast-notifications";
-import { URL_BASE } from "../util/constants";
 import { useUserStore } from "../store/userStore";
+import { URL_BASE } from "../util/constants";
 
-type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicine'>;
+type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicines'>;
 
-const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
-
+const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
+  const [loading, setLoading] = useState(false);
   const [listMedicines, setListMedicines] = useState<IMedicine[]>(null);
   const [noMedicines, setNoMedicines] = useState(false);
-  const userStore = useUserStore();
   const toast = useToast();
+  const userStore = useUserStore();
 
   useEffect(() => {
-    const getList = async () => {
-      await getMedicines();
-    }
-    getList();
-  }, [listMedicines]);
-
-  const deleteMedicine = async () => {
-    try {
-      const response = await fetch(URL_BASE + '/medicine/' + medicineSelected.id, {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
-        }
-      });
-
-      const json = await response.json();
-
-      if (json.status == 200) {
-        setModalVisible(!modalVisible);
-        toast.show("Remédio deletado", {
-          type: "success",
-        });
-      }
-
-      else
-        throw new Error("Remédio não deletado");
-
-    } catch (error) {
-      console.error(error);
-      toast.show("Erro ao deletar remédio", {
-        type: "danger",
-      });
-    }
-  };
+    getMedicines();
+  }, []);
 
   const getMedicines = async () => {
+    setLoading(true);
     try {
       const response = await fetch(URL_BASE + '/medicine/list/' + userStore.user.id, {
         method: 'GET',
         headers: {
+          Accept: 'application/json',
           "Content-Type": "application/json",
           'Authorization': 'Bearer ' + userStore.token
         }
@@ -75,26 +44,59 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
 
       const json = await response.json();
 
-      if (json.status == "success") {
-        json.medicines.length == 0 ? setNoMedicines(true) : setNoMedicines(false);
+      if (json.status !== "success")
+        throw new Error(json.message);
+
+      if (json.total > 0) {
         setListMedicines(json.medicines);
+        setNoMedicines(false);
       }
 
       else
-        throw new Error("Erro ao recuperar remédios");
-
+        setNoMedicines(true);
     } catch (error) {
-      console.error(error);
-      toast.show("Erro ao recuperar remédios", {
-        type: "danger",
-      });
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+
+  const handleDelete = async () => {
+    setModalVisible(!modalVisible)
+    setLoading(true);
+    try {
+      const response = await fetch(URL_BASE + '/medicine/' + medicineSelected.id, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer ' + userStore.token
+        }
+      });
+
+      const json = await response.json();
+
+      if (json.status !== "success")
+        throw new Error(json.message);
+
+      toast.show("Remédio deletado com sucesso", { type: "success" });
+    } catch (error) {
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="tertiary" />
+
+      <ModalComponent
+        visible={loading}
+        onRequestClose={() => setLoading(!loading)}>
+        <ActivityIndicator size={60} color={colors.gray400} />
+      </ModalComponent>
 
       <ModalComponent
         visible={modalVisible}
@@ -114,7 +116,7 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
               <Button
                 variant="destructive"
                 size="full"
-                onPress={deleteMedicine}>
+                onPress={handleDelete}>
                 <View style={styles.buttonContent}>
                   <Text style={styles.textButton}>Excluir</Text>
                 </View>
@@ -131,7 +133,6 @@ const ListMedicineScreen = ({ navigation }: ListMedicineScreenProps) => {
             </View>
           </View>
         </View>
-
       </ModalComponent>
 
       {noMedicines ? (
@@ -251,4 +252,4 @@ const stylesModal = StyleSheet.create({
   },
 })
 
-export default ListMedicineScreen;
+export default ListMedicinesScreen;

@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native"
+import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -14,8 +14,8 @@ import { StatusBarComponent } from "../components/status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "../store/userStore";
 import { useToast } from "react-native-toast-notifications";
+import { ModalComponent } from "../components/modal";
 import { URL_BASE } from "../util/constants";
-import { useNavigation } from "@react-navigation/native";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
@@ -26,6 +26,7 @@ type FormMedicine = {
 }
 
 const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => {
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormMedicine | null>(null);
   const [step, setStep] = useState(1);
   const toast = useToast();
@@ -43,7 +44,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     '8 horas',
   ]
 
-  const registerMedicine = async () => {
+  const handleConcluir = async () => {
     if (!form?.interval) {
       toast.show("Preencha o intervalo do remédio", {
         type: "danger",
@@ -51,15 +52,17 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
       return;
     }
 
+    setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/medicine/', {
+      const response = await fetch(URL_BASE + '/medicine', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           "Content-Type": "application/json",
           'Authorization': 'Bearer ' + userStore.token
         },
         body: JSON.stringify({
-          name: form.title,
+          title: form.title,
           dosage: form.dosage,
           interval: form.interval,
           patientId: userStore.user.id
@@ -68,24 +71,17 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
       const json = await response.json();
 
-      if (json.status === 'success') {
-        toast.show("Novo remédio cadastrado", {
-          type: "success",
-        });
-        navigation.navigate("listMedicine");
-      }
+      if (json.status !== "success")
+        throw new Error(json.message);
 
-      else {
-        throw new Error('Erro ao cadastrar remédio');
-      }
-
+      toast.show("Remédio cadastrado com sucesso", { type: "success" });
+      navigation.navigate("listMedicines");
     } catch (error) {
-      console.error(error);
-      toast.show("Remédio não cadastrado", {
-        type: "danger",
-      });
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   const handleProximo = () => {
     if (step == 1 && !form?.title) {
@@ -107,7 +103,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
   const handleBackButton = () => {
     if (step == 1)
-      useNavigation().goBack;
+      navigation.navigate("listMedicines");
     else
       setStep(step - 1);
   }
@@ -146,6 +142,12 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
         <StatusBarComponent variant="secondary" />
 
+        <ModalComponent
+          visible={loading}
+          onRequestClose={() => setLoading(!loading)}>
+          <ActivityIndicator size={60} color={colors.gray400} />
+        </ModalComponent>
+
         <ScrollView style={styles.content}>
 
           <View style={styles.steps}>
@@ -171,7 +173,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
         {step == 3 ?
           <View style={styles.button}>
-            <Button size="full" variant="tertiary" onPress={registerMedicine}>
+            <Button size="full" variant="tertiary" onPress={handleConcluir}>
               <View style={styles.buttonContent}>
                 <Text style={styles.textButton}>Concluir</Text>
               </View>
@@ -197,10 +199,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
     paddingBottom: 20,
   },
-  header: {
-    marginTop: '15%',
-    marginLeft: 30,
-  },
   inputContainer: {
     paddingTop: 30,
   },
@@ -209,12 +207,6 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     fontFamily: fontFamily.regular,
     fontSize: fontSize["2xl"],
-  },
-  numberBorder: {
-    width: 150,
-    height: 150,
-    backgroundColor: 'black',
-    borderRadius: 75, // Half of width and height to make it circular
   },
   steps: {
     alignItems: 'center',
@@ -226,20 +218,9 @@ const styles = StyleSheet.create({
     marginTop: 30,
     paddingHorizontal: 20,
   },
-  textCadastrarRemedio: {
-    fontSize: fontSize.xl,
-    fontFamily: fontFamily.bold,
-    marginBottom: 36,
-    paddingHorizontal: 20,
-  },
   textButton: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.regular,
-  },
-  containerInput: {
-    paddingHorizontal: 20,
-    marginTop: 30,
-    gap: 20
   },
   button: {
     paddingHorizontal: 20,

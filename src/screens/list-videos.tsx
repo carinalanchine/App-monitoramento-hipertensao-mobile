@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native"
+import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native"
 import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
@@ -6,52 +6,71 @@ import YoutubeIframe from "react-native-youtube-iframe";
 import { StatusBarComponent } from "../components/status-bar";
 import { useEffect, useState } from "react";
 import { IVideo } from "../interfaces/IVideo";
-import { URL_BASE } from "../util/constants";
+import { useToast } from "react-native-toast-notifications";
 import { useUserStore } from "../store/userStore";
+import { URL_BASE } from "../util/constants";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../routes/stack.routes";
+import { ModalComponent } from "../components/modal";
+
+type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "listVideos">;
 
 const extractVideoId = (link: string) => {
   const videoId = link.split("v=")[1].split("&")[0];
   return videoId;
 }
 
-const ListOfVideosScreen = () => {
+const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
+  const [loading, setLoading] = useState(true);
   const [listVideos, setListVideos] = useState<IVideo[]>(null);
   const { width } = useWindowDimensions();
   const video_height = 250;
+  const toast = useToast();
   const userStore = useUserStore();
 
   useEffect(() => {
+    const getVideos = async () => {
+      try {
+        const response = await fetch(URL_BASE + '/video/list', {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ' + userStore.token
+          }
+        });
+
+        const json = await response.json();
+
+        if (json.status !== "success")
+          throw new Error(json.message);
+
+        if (json.total > 0)
+          setListVideos(json.videos);
+
+        else
+          throw new Error("Não há vídeos");
+      } catch (error) {
+        toast.show(`${error}`, { type: "danger" });
+        navigation.navigate("main");
+      } finally {
+        setLoading(false);
+      }
+    }
+
     getVideos();
   }, []);
-
-  const getVideos = async () => {
-    try {
-      const response = await fetch(URL_BASE + '/video/list/', {
-        method: 'GET',
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
-        }
-      });
-
-      const json = await response.json();
-
-      if (json.status == "success") {
-        setListVideos(json.videos);
-      }
-
-      else
-        throw new Error("Erro ao recuperar vídeos");
-
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="lightBlue" />
+
+      <ModalComponent
+        visible={loading}
+        onRequestClose={() => setLoading(!loading)}>
+        <ActivityIndicator size={60} color={colors.gray400} />
+      </ModalComponent>
 
       <FlatList
         style={styles.listVideos}
@@ -78,11 +97,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.secondary,
   },
-  textTitle: {
-    fontFamily: fontFamily.bold,
-    fontSize: fontSize.xl,
-    marginTop: 1
-  },
   videoPlayer: {
     gap: 5,
     width: "100%",
@@ -102,4 +116,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ListOfVideosScreen;
+export default ListVideosScreen;

@@ -1,30 +1,29 @@
 import { create } from 'zustand'
 import { IUser } from '../interfaces/IUser';
-import { getObject } from '../util/storage';
 
 type loggedUser = {
   user: IUser
-  token: string,
   signedIn: boolean,
+  token: string,
 
-  setLoggedUser: (newUser: IUser, newToken: string) => void;
+  setLogin: (newUser: IUser, token: string) => void;
   setLogout: () => void;
 }
 
 export const useUserStore = create<loggedUser>((set) => ({
   user: null,
-  token: "",
   signedIn: false,
+  token: "",
 
-  setLoggedUser: (newUser: IUser, newToken: string) => set(() => ({
+  setLogin: (newUser: IUser, token: string) => set(() => ({
     user: newUser,
-    token: newToken,
     signedIn: true,
+    token: token
   })),
 
   setLogout: () => set(() => ({
     user: null,
-    token: "",
     signedIn: false,
+    token: "",
   }))
 }));

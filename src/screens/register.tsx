@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { View, StyleSheet, Text, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -12,9 +12,10 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
-import { URL_BASE } from "../util/constants";
+import { HOSPITAL_ID, URL_BASE } from "../util/constants";
+import { ModalComponent } from "../components/modal";
 
-type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'register'>;
+type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "register">;
 
 type FormRegister = {
   nome: string;
@@ -24,47 +25,15 @@ type FormRegister = {
 }
 
 const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormRegister | null>(null);
   const toast = useToast();
 
-  const registerPatient = async () => {
-    try {
-      const response = await fetch(URL_BASE + '/patient/', {
-        method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cpf: form.cpf,
-          name: form.nome,
-          password: form.password,
-          hospital_id: "17a557d6-697a-450b-b28c-bfdeca6cb23a"
-        })
-      });
-
-      const json = await response.json();
-
-      if (json.status == 'success') {
-        toast.show("Cadastro realizado com sucesso!", {
-          type: "success",
-        });
-        navigation.navigate("login");
-      }
-
-      else
-        toast.show("Erro ao realizar cadastro", {
-          type: "danger",
-        });
-
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password || !form.verifyPassword) {
       toast.show("Preencha todos os campos", {
         type: "danger",
       });
-
       return
     };
 
@@ -72,12 +41,38 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       toast.show("As senhas precisam ser iguais", {
         type: "danger",
       });
-
       return
     }
 
-    registerPatient();
-  };
+    setLoading(true);
+    try {
+      const response = await fetch(URL_BASE + '/patient', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          cpf: form.cpf,
+          name: form.nome,
+          password: form.password,
+          hospitalId: HOSPITAL_ID
+        })
+      });
+
+      const json = await response.json();
+
+      if (json.status !== "success")
+        throw new Error(json.message);
+
+      toast.show("Cadastro realizado com sucesso", { type: "success" });
+      navigation.navigate("login");
+    } catch (error) {
+      toast.show(`${error}`, { type: "danger" });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const maskCpf = (value: string) => {
     setForm({
@@ -95,6 +90,12 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="secondary" />
+
+      <ModalComponent
+        visible={loading}
+        onRequestClose={() => setLoading(!loading)}>
+        <ActivityIndicator size={60} color={colors.gray400} />
+      </ModalComponent>
 
       <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>

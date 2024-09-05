@@ -15,16 +15,14 @@ import { StatusBarComponent } from "../components/status-bar";
 import { useUserStore } from "../store/userStore";
 import { ModalComponent } from "../components/modal";
 import { useState } from "react";
-import { storeObject } from "../util/storage";
 
-type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'main'>;
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "main">;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const userStore = useUserStore();
 
   const handleLogout = async () => {
-    await storeObject("isSignedUp", "false");
     userStore.setLogout();
   }
 
@@ -76,7 +74,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <Text style={styles.text}>Serviços</Text>
 
         <View style={styles.containerButtons}>
-          <Button variant="lightBlue" size="menuCard" onPress={() => navigation.navigate("listOfVideos")}>
+          <Button variant="lightBlue" size="menuCard" onPress={() => navigation.navigate("listVideos")}>
             <View style={styles.buttonContent}>
               <Image source={Dicas} style={styles.image} />
               <Text style={styles.textButton}>Dicas</Text>
@@ -90,7 +88,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             </View>
           </Button>
 
-          <Button variant="tertiary" size="menuCard" onPress={() => navigation.navigate("listMedicine")}>
+          <Button variant="tertiary" size="menuCard" onPress={() => navigation.navigate("listMedicines")}>
             <View style={styles.buttonContent}>
               <Image source={Remedio} style={styles.image} />
               <Text style={styles.textButton}>Remédios</Text>
