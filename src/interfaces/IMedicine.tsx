@@ -3,5 +3,5 @@ export interface IMedicine {
   title: string,
   interval: string,
   dosage: string,
-  patientId?: string,
+  patientId: string,
 }

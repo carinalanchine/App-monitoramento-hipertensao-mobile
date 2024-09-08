@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native"
+import { FlatList, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native"
 import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
@@ -11,8 +11,8 @@ import { useUserStore } from "../store/userStore";
 import { URL_BASE } from "../util/constants";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import { ModalComponent } from "../components/modal";
 import { Card } from "../components/card";
+import { Loading } from "../components/loading";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "listVideos">;
 
@@ -68,12 +68,7 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="lightBlue" />
-
-      <ModalComponent
-        visible={loading}
-        onRequestClose={() => setLoading(!loading)}>
-        <ActivityIndicator size={60} color={colors.gray400} />
-      </ModalComponent>
+      <Loading status={loading}></Loading>
 
       {noVideos ? (
         <>

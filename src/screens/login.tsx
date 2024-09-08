@@ -1,5 +1,5 @@
-import { ReactDOM, useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Text, ScrollView, ActivityIndicator, TextInput } from "react-native";
+import { useRef, useState } from "react";
+import { View, StyleSheet, Text, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -13,8 +13,9 @@ import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
 import { useUserStore } from "../store/userStore";
-import { ModalComponent } from "../components/modal";
 import { URL_BASE } from "../util/constants";
+import { storeLogin } from "../util/storage";
+import { Loading } from "../components/loading";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "login">;
 
@@ -55,7 +56,9 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       if (json.status !== "success")
         throw new Error(json.message);
 
-      userStore.setLogin(json.user, json.accessToken);
+      const newUser = { id: json.user.id, name: json.user.name };
+      await storeLogin(newUser, json.accessToken);
+      userStore.setLogin(newUser, json.accessToken);
       toast.show("Login realizado com sucesso", { type: "success" });
     } catch (error) {
       toast.show(`${error}`, { type: "danger" });
@@ -80,12 +83,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="secondary" />
-
-      <ModalComponent
-        visible={loading}
-        onRequestClose={() => setLoading(!loading)}>
-        <ActivityIndicator size={60} color={colors.gray400} />
-      </ModalComponent>
+      <Loading status={loading}></Loading>
 
       <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>
@@ -102,7 +100,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
             enterKeyHint="next"
             blurOnSubmit={false}
             value={form?.cpf || ""}
-            onSubmitEditing={() => { passwordRef.current.focus() }}
+            onSubmitEditing={() => passwordRef.current.focus()}
             onChangeText={(text) => maskCpf(text)}
           />
           <Input
@@ -145,7 +143,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    marginBottom: 20
   },
   scroll: {
     paddingHorizontal: 20,
@@ -175,6 +172,8 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     paddingHorizontal: 20,
     gap: 10,
+    marginBottom: 20,
+    marginTop: 10,
   },
   buttonContent: {
     justifyContent: 'center',

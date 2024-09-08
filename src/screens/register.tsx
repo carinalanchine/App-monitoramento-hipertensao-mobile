@@ -13,7 +13,7 @@ import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
 import { HOSPITAL_ID, URL_BASE } from "../util/constants";
-import { ModalComponent } from "../components/modal";
+import { Loading } from "../components/loading";
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "register">;
 
@@ -94,12 +94,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="secondary" />
-
-      <ModalComponent
-        visible={loading}
-        onRequestClose={() => setLoading(!loading)}>
-        <ActivityIndicator size={60} color={colors.gray400} />
-      </ModalComponent>
+      <Loading status={loading}></Loading>
 
       <ScrollView style={styles.scroll}>
         <View style={styles.containerImage}>
@@ -178,7 +173,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.secondary,
-    marginBottom: 20
   },
   scroll: {
     paddingHorizontal: 20,
@@ -207,6 +201,8 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     gap: 10,
     paddingHorizontal: 20,
+    marginBottom: 20,
+    marginTop: 10
   },
   buttonContent: {
     justifyContent: 'center',

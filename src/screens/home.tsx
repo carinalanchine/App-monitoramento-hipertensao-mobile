@@ -15,6 +15,7 @@ import { StatusBarComponent } from "../components/status-bar";
 import { useUserStore } from "../store/userStore";
 import { ModalComponent } from "../components/modal";
 import { useState } from "react";
+import { deleteLogin } from "../util/storage";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "main">;
 
@@ -23,6 +24,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const userStore = useUserStore();
 
   const handleLogout = async () => {
+    await deleteLogin();
     userStore.setLogout();
   }
 

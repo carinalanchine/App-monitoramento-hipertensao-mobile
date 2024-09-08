@@ -23,7 +23,7 @@ export const useUserStore = create<loggedUser>((set) => ({
 
   setLogout: () => set(() => ({
     user: null,
-    signedIn: false,
     token: "",
+    signedIn: false
   }))
 }));

@@ -15,6 +15,7 @@ import { useToast } from "react-native-toast-notifications";
 import { useUserStore } from "../store/userStore";
 import { URL_BASE } from "../util/constants";
 import { useFocusEffect } from "@react-navigation/native";
+import { Loading } from "../components/loading";
 
 type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicines'>;
 
@@ -94,12 +95,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
     <SafeAreaView style={styles.container}>
 
       <StatusBarComponent variant="tertiary" />
-
-      <ModalComponent
-        visible={loading}
-        onRequestClose={() => setLoading(!loading)}>
-        <ActivityIndicator size={60} color={colors.gray400} />
-      </ModalComponent>
+      <Loading status={loading}></Loading>
 
       <ModalComponent
         visible={modalVisible}

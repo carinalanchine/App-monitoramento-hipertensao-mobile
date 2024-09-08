@@ -9,8 +9,8 @@ import ScrollPicker from "react-native-wheel-scrollview-picker";
 import React from "react";
 import { useToast } from "react-native-toast-notifications";
 import { useUserStore } from "../store/userStore";
-import { ModalComponent } from "../components/modal";
 import { URL_BASE } from "../util/constants";
+import { Loading } from "../components/loading";
 
 type FormPressao = {
   sistolica: number;
@@ -58,12 +58,7 @@ const MeasurePressureScreen = () => {
     <View style={styles.container}>
 
       <StatusBarComponent variant="pink" />
-
-      <ModalComponent
-        visible={loading}
-        onRequestClose={() => setLoading(!loading)}>
-        <ActivityIndicator size={60} color={colors.gray400} />
-      </ModalComponent>
+      <Loading status={loading}></Loading>
 
       <ScrollView style={styles.content}>
 

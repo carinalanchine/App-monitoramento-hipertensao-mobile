@@ -1,7 +1,7 @@
 export interface IUser {
   id: string,
-  name?: string,
+  name: string,
+  role?: string,
   cpf?: string,
-  hospitalId?: string,
-  token?: string,
+  hospitalId?: string
 }

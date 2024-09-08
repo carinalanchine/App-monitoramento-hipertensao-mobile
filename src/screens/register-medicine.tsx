@@ -14,8 +14,8 @@ import { StatusBarComponent } from "../components/status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserStore } from "../store/userStore";
 import { useToast } from "react-native-toast-notifications";
-import { ModalComponent } from "../components/modal";
 import { URL_BASE } from "../util/constants";
+import { Loading } from "../components/loading";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
@@ -133,12 +133,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
       <SafeAreaView style={styles.container}>
 
         <StatusBarComponent variant="secondary" />
-
-        <ModalComponent
-          visible={loading}
-          onRequestClose={() => setLoading(!loading)}>
-          <ActivityIndicator size={60} color={colors.gray400} />
-        </ModalComponent>
+        <Loading status={loading}></Loading>
 
         <ScrollView style={styles.content}>
 
