@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
+import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { StatusBarComponent } from "../components/status-bar";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import React from "react";
 import { useToast } from "react-native-toast-notifications";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { URL_BASE } from "../util/constants";
 import { Loading } from "../components/loading";
 
@@ -22,7 +22,7 @@ const MeasurePressureScreen = () => {
   const [loading, setLoading] = useState(false);
   const dadosPicker = [...Array(50).keys()]
   const toast = useToast();
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   const handleSalvar = async () => {
     setLoading(true);
@@ -32,12 +32,12 @@ const MeasurePressureScreen = () => {
         headers: {
           Accept: 'application/json',
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
+          'Authorization': 'Bearer ' + authStore.accessToken
         },
         body: JSON.stringify({
           systolic: form.sistolica,
           diastolic: form.diastolica,
-          patientId: userStore.user.id
+          patientId: authStore.user.id
         })
       });
 

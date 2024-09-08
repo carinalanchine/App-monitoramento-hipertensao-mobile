@@ -12,20 +12,20 @@ import Dicas from "../../assets/dicas.png";
 import Remedio from "../../assets/remedio.png";
 import Pressao from "../../assets/pressao.png";
 import { StatusBarComponent } from "../components/status-bar";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { ModalComponent } from "../components/modal";
 import { useState } from "react";
-import { deleteLogin } from "../util/storage";
+import { storeSignOut } from "../util/storage";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "main">;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   const handleLogout = async () => {
-    await deleteLogin();
-    userStore.setLogout();
+    await storeSignOut();
+    authStore.setSignOut();
   }
 
   return (
@@ -72,7 +72,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
 
       <ScrollView style={styles.scroll}>
-        <Text style={styles.title}>{'Olá, ' + userStore.user.name + '!'}</Text>
+        <Text style={styles.title}>{'Olá, ' + authStore.user.name + '!'}</Text>
         <Text style={styles.text}>Serviços</Text>
 
         <View style={styles.containerButtons}>

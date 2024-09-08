@@ -6,31 +6,30 @@ import { NavigationContainer } from '@react-navigation/native';
 import StackRoutes from './src/routes/stack.routes';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getToken, getUser } from './src/util/storage';
-import { useUserStore } from './src/store/userStore';
+import { useAuthStore } from './src/store/authStore';
+import { getAccessToken, getUser } from './src/util/storage';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
   const [fontsLoaded, fontError] = useFonts({
     Poppins_400Regular, Poppins_600SemiBold, Poppins_500Medium
   });
 
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await getToken();
+    const localSignIn = async () => {
+      const token = await getAccessToken();
       if (token) {
         const user = await getUser();
-        userStore.setLogin(user, token);
+        authStore.setSignIn(user, token);
       }
+      return true;
     }
 
-    checkToken();
-  }, []);
+    const signIn = localSignIn();
 
-  useEffect(() => {
-    if (fontsLoaded)
+    if (fontsLoaded && signIn)
       SplashScreen.hideAsync();
 
   }, [fontsLoaded]);

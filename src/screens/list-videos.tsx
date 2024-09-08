@@ -7,7 +7,7 @@ import { StatusBarComponent } from "../components/status-bar";
 import { useEffect, useState } from "react";
 import { IVideo } from "../interfaces/IVideo";
 import { useToast } from "react-native-toast-notifications";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { URL_BASE } from "../util/constants";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -28,7 +28,7 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
   const { width } = useWindowDimensions();
   const video_height = 250;
   const toast = useToast();
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   useEffect(() => {
     const getVideos = async () => {
@@ -38,7 +38,7 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
           headers: {
             Accept: 'application/json',
             "Content-Type": "application/json",
-            'Authorization': 'Bearer ' + userStore.token
+            'Authorization': 'Bearer ' + authStore.accessToken
           }
         });
 

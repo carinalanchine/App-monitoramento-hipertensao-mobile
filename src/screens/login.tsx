@@ -12,9 +12,9 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { URL_BASE } from "../util/constants";
-import { storeLogin } from "../util/storage";
+import { storeSignIn } from "../util/storage";
 import { Loading } from "../components/loading";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "login">;
@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
   const toast = useToast();
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   const handleLogin = async () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
@@ -57,11 +57,13 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
         throw new Error(json.message);
 
       const newUser = { id: json.user.id, name: json.user.name };
-      await storeLogin(newUser, json.accessToken);
-      userStore.setLogin(newUser, json.accessToken);
+      const token = { accessToken: json.accessToken, refreshToken: json.refreshToken };
+      await storeSignIn(newUser, token);
+      authStore.setSignIn(newUser, token.accessToken);
+
       toast.show("Login realizado com sucesso", { type: "success" });
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      toast.show("Não foi possível realizar o login", { type: "danger" });
     } finally {
       setLoading(false);
     }

@@ -12,7 +12,7 @@ import RegisterScreen from "../screens/register";
 import HomeScreen from "../screens/home";
 import { colors } from "../theme/colors";
 import { BackButton } from "../components/back-button";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 
 export type RootStackParamList = {
   initial: undefined;
@@ -28,7 +28,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackRoutes = () => {
-  const isSignedIn = useUserStore().signedIn;
+  const isSignedIn = useAuthStore().accessToken !== "";
 
   return (
     <Stack.Navigator

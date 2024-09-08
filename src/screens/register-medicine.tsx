@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, ScrollView, ActivityIndicator } from "react-native"
+import { Text, View, StyleSheet, ScrollView } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -12,7 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import { StatusBarComponent } from "../components/status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { useToast } from "react-native-toast-notifications";
 import { URL_BASE } from "../util/constants";
 import { Loading } from "../components/loading";
@@ -30,7 +30,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const [form, setForm] = useState<FormMedicine | null>(null);
   const [step, setStep] = useState(1);
   const toast = useToast();
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   const titleContent = [
     'Nome do remédio',
@@ -52,13 +52,13 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
         headers: {
           Accept: 'application/json',
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
+          'Authorization': 'Bearer ' + authStore.accessToken
         },
         body: JSON.stringify({
           title: form.title,
           dosage: form.dosage,
           interval: form.interval,
-          patientId: userStore.user.id
+          patientId: authStore.user.id
         })
       });
 

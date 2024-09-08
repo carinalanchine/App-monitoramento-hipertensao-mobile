@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, FlatList, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { fontSize } from "../theme/font-size";
@@ -12,7 +12,7 @@ import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
 import { useToast } from "react-native-toast-notifications";
-import { useUserStore } from "../store/userStore";
+import { useAuthStore } from "../store/authStore";
 import { URL_BASE } from "../util/constants";
 import { useFocusEffect } from "@react-navigation/native";
 import { Loading } from "../components/loading";
@@ -26,7 +26,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [listMedicines, setListMedicines] = useState<IMedicine[]>(null);
   const [noMedicines, setNoMedicines] = useState(false);
   const toast = useToast();
-  const userStore = useUserStore();
+  const authStore = useAuthStore();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -37,12 +37,12 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const getMedicines = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/medicine/list/' + userStore.user.id, {
+      const response = await fetch(URL_BASE + '/medicine/list/' + authStore.user.id, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
+          'Authorization': 'Bearer ' + authStore.accessToken
         }
       });
 
@@ -73,7 +73,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
         headers: {
           Accept: 'application/json',
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + userStore.token
+          'Authorization': 'Bearer ' + authStore.accessToken
         }
       });
 
