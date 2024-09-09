@@ -44,13 +44,14 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   ]
 
   const handleRegister = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       await createMedicine(form);
       toast.show("Remédio cadastrado com sucesso", { type: "success" });
       navigation.goBack();
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
     } finally {
       setLoading(false);
     }

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { IMedicine } from "../interfaces/IMedicine";
-import { URL_BASE } from "../util/constants";
 import { useAuthStore } from "../store/authStore";
-import { useFocusEffect } from "@react-navigation/native";
-import React from "react";
+import { useAxios } from "../api/useAxios";
 
 type CreateMedicineInput = {
   title: string;
@@ -16,66 +14,41 @@ export const useMedicines = () => {
   const authStore = useAuthStore();
 
   const getMedicines = async () => {
-    const response = await fetch(URL_BASE + '/medicine/list/' + authStore.user.id, {
+    await useAxios({
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ' + authStore.accessToken
-      }
-    });
-
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
-
-    setListMedicines(json.medicines);
+      url: '/medicine/list/' + authStore.user.id,
+      headers: { 'Authorization': 'Bearer ' + authStore.accessToken }
+    }).then((response) => {
+      setListMedicines(response.data.medicines);
+    }).catch(() => {
+      throw new Error("Não foi possível recuperar os remédios");
+    })
   }
 
   const deleteMedicine = async (id: string) => {
-    const filterDeleted = (medicine: IMedicine) => {
-      return medicine.id !== id;
-    }
-
-    const response = await fetch(URL_BASE + '/medicine/' + id, {
+    await useAxios({
       method: 'DELETE',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ' + authStore.accessToken
-      }
-    });
-
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
-
-    const array = listMedicines.filter(filterDeleted);
-    setListMedicines(array);
+      url: '/medicine/' + id,
+      headers: { 'Authorization': 'Bearer ' + authStore.accessToken }
+    }).catch(() => {
+      throw new Error("Não foi possível excluir o remédio");
+    })
   }
 
   const createMedicine = async (form: CreateMedicineInput) => {
-    const response = await fetch(URL_BASE + '/medicine', {
+    await useAxios({
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ' + authStore.accessToken
-      },
-      body: JSON.stringify({
+      url: '/medicine',
+      headers: { 'Authorization': 'Bearer ' + authStore.accessToken },
+      data: {
         title: form.title,
         dosage: form.dosage,
         interval: form.interval,
         patientId: authStore.user.id
-      })
-    });
-
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
+      }
+    }).catch(() => {
+      throw new Error("Não foi possível cadastrar o remédio");
+    })
   }
 
   return { listMedicines, deleteMedicine, getMedicines, createMedicine };

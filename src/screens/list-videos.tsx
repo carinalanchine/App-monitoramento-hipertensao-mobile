@@ -3,6 +3,8 @@ import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
+import RedCircle from "../../assets/red-circle.png"
+import { Image } from "react-native";
 import { StatusBarComponent } from "../components/status-bar";
 import { useEffect, useState } from "react";
 import { useToast } from "react-native-toast-notifications";
@@ -21,7 +23,7 @@ const extractVideoId = (link: string) => {
 
 const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(false);
-  const [noVideos, setNoVideos] = useState(false);
+  const [noVideos, setNoVideos] = useState(true);
   const { listVideos, getVideos } = useVideos();
   const { width } = useWindowDimensions();
   const video_height = 250;
@@ -29,11 +31,12 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
 
   useEffect(() => {
     const getList = async () => {
-      setLoading(true);
       try {
+        setLoading(true);
         await getVideos();
       } catch (error) {
-        toast.show(`${error}`, { type: "danger" });
+        const message = `${error}`.split(": ")[1];
+        toast.show(message, { type: "danger" });
       } finally {
         setLoading(false);
       }
@@ -56,7 +59,10 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
         <>
           <View style={styles.containerCard}>
             <Card variant="secondary">
-              <Text style={styles.text}>Ainda não há dicas disponibilizadas!</Text>
+              <View style={styles.emptyCard}>
+                <Image source={RedCircle} style={styles.image} />
+                <Text style={styles.text}>Não há dicas disponibilizadas</Text>
+              </View>
             </Card>
           </View>
         </>
@@ -96,9 +102,18 @@ const styles = StyleSheet.create({
     marginTop: 25,
     paddingHorizontal: 20
   },
+  image: {
+    height: 50,
+    width: 50,
+    resizeMode: 'contain'
+  },
+  emptyCard: {
+    flexDirection: 'row',
+    gap: 20,
+  },
   containerCard: {
     paddingHorizontal: 30,
-    paddingTop: 10,
+    paddingTop: 20,
     paddingBottom: 10,
   },
   text: {

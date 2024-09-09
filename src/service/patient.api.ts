@@ -1,4 +1,5 @@
-import { HOSPITAL_ID, URL_BASE } from "../util/constants";
+import { HOSPITAL_ID } from "../util/constants";
+import { useAxios } from "../api/useAxios";
 
 type RegisterPatientInput = {
   nome: string;
@@ -8,24 +9,18 @@ type RegisterPatientInput = {
 
 export const usePatient = () => {
   const createPatient = async (form: RegisterPatientInput) => {
-    const response = await fetch(URL_BASE + '/patient', {
+    await useAxios({
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+      url: '/patient',
+      data: {
         cpf: form.cpf,
         name: form.nome,
         password: form.password,
         hospitalId: HOSPITAL_ID
-      })
-    });
-
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
+      }
+    }).catch(() => {
+      throw new Error("Não foi possível realizar o cadastro");
+    })
   }
 
   return { createPatient };

@@ -24,12 +24,13 @@ const MeasurePressureScreen = () => {
   const toast = useToast();
 
   const handleSalvar = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       await createBloodPressure(form);
       toast.show("Pressão salva com sucesso", { type: "success" });
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
     } finally {
       setLoading(false);
     }

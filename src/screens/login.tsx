@@ -35,12 +35,13 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
       return
     };
 
-    setLoading(true);
     try {
+      setLoading(true);
       await loginPatient(form);
       toast.show("Login realizado com sucesso", { type: "success" });
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
     } finally {
       setLoading(false);
     }
@@ -85,6 +86,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
           <Input
             ref={passwordRef}
             label="senha"
+            autoCapitalize="none"
+            autoCorrect={false}
             placeholder="********"
             secureTextEntry
             enterKeyHint="done"

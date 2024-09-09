@@ -1,6 +1,6 @@
-import { URL_BASE } from "../util/constants";
 import { getRefreshToken, storeRefresh, storeSignIn } from "../util/storage";
 import { useAuthStore } from "../store/authStore";
+import { useAxios } from "../api/useAxios";
 
 type LoginInput = {
   cpf: string,
@@ -11,60 +11,52 @@ export const useAuth = () => {
   const authStore = useAuthStore();
 
   const loginPatient = async (form: LoginInput) => {
-    const response = await fetch(URL_BASE + '/login', {
+    await useAxios({
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+      url: '/login',
+      data: {
         cpf: form.cpf,
         password: form.password
-      })
-    });
+      }
+    }).then(async (response) => {
+      const newUser = {
+        id: response.data.user.id,
+        name: response.data.user.name
+      };
 
-    const json = await response.json();
+      const token = {
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken
+      };
 
-    if (json.status !== "success")
-      throw new Error(json.message);
+      await storeSignIn(newUser, token);
+      authStore.setSignIn(newUser, token.accessToken);
+    }).catch((error) => {
+      if (error.status == 404 || error.status == 401)
+        throw new Error(error.response.data.message);
 
-    const newUser = {
-      id: json.user.id,
-      name: json.user.name
-    };
-
-    const token = {
-      accessToken: json.accessToken,
-      refreshToken: json.refreshToken
-    };
-
-    await storeSignIn(newUser, token);
-    authStore.setSignIn(newUser, token.accessToken);
+      throw new Error("Não foi possível realizar o login");
+    })
   }
 
   const refreshToken = async () => {
     const refreshToken = await getRefreshToken();
-    const response = await fetch(URL_BASE + '/refresh', {
+
+    await useAxios({
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ' + refreshToken
-      }
-    });
+      url: '/refreshToken',
+      headers: { 'Authorization': 'Bearer ' + refreshToken }
+    }).then(async (response) => {
+      const token = {
+        accessToken: response.data.accessToken,
+        refreshToken: response.data.refreshToken
+      };
 
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
-
-    const token = {
-      accessToken: json.accessToken,
-      refreshToken: json.refreshToken
-    };
-
-    await storeRefresh(token);
-    authStore.setRefresh(token.accessToken);
+      await storeRefresh(token);
+      authStore.setRefresh(token.accessToken);
+    }).catch(() => {
+      throw new Error("Error on refresh token");
+    })
   }
 
   return { loginPatient, refreshToken };

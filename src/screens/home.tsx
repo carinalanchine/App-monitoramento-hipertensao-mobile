@@ -16,16 +16,22 @@ import { useAuthStore } from "../store/authStore";
 import { ModalComponent } from "../components/modal";
 import { useState } from "react";
 import { storeSignOut } from "../util/storage";
+import { useToast } from "react-native-toast-notifications";
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, "main">;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const authStore = useAuthStore();
+  const toast = useToast();
 
   const handleLogout = async () => {
-    await storeSignOut();
-    authStore.setSignOut();
+    try {
+      await storeSignOut();
+      authStore.setSignOut();
+    } catch (error) {
+      toast.show("Erro ao encerrar sessão", { type: "danger" });
+    }
   }
 
   return (

@@ -18,6 +18,8 @@ type InputProps = {
   defaultValue?: string;
   valueType?: KeyboardTypeOptions;
   blurOnSubmit?: boolean;
+  autoCapitalize?: "none" | "words";
+  autoCorrect?: boolean;
 }
 
 const Input = React.forwardRef<TextInput, InputProps>(({ ...inputProps }, ref) => {
@@ -26,6 +28,8 @@ const Input = React.forwardRef<TextInput, InputProps>(({ ...inputProps }, ref) =
       <TextInput
         ref={ref}
         style={styles.input}
+        autoCorrect={inputProps.autoCorrect}
+        autoCapitalize={inputProps.autoCapitalize}
         blurOnSubmit={inputProps.blurOnSubmit}
         autoFocus={inputProps.autoFocus}
         keyboardType={inputProps.valueType}

@@ -1,5 +1,5 @@
 import { useAuthStore } from "../store/authStore";
-import { URL_BASE } from "../util/constants";
+import { useAxios } from "../api/useAxios";
 
 type PressureInput = {
   sistolica: number;
@@ -10,24 +10,18 @@ export const usePressure = () => {
   const authStore = useAuthStore();
 
   const createBloodPressure = async (form: PressureInput) => {
-    const response = await fetch(URL_BASE + '/pressure', {
+    await useAxios({
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        "Content-Type": "application/json",
-        'Authorization': 'Bearer ' + authStore.accessToken
-      },
-      body: JSON.stringify({
+      url: '/pressure',
+      headers: { 'Authorization': 'Bearer ' + authStore.accessToken },
+      data: {
         systolic: form.sistolica,
         diastolic: form.diastolica,
         patientId: authStore.user.id
-      })
-    });
-
-    const json = await response.json();
-
-    if (json.status !== "success")
-      throw new Error(json.message);
+      }
+    }).catch(() => {
+      throw new Error("Não foi possível salvar a pressão");
+    })
   }
 
   return { createBloodPressure };

@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { fontSize } from "../theme/font-size";
 import { fontFamily } from "../theme/font-family";
+import { Image } from "react-native";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -11,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
+import RedCircle from "../../assets/red-circle.png"
 import { useToast } from "react-native-toast-notifications";
 import { useFocusEffect } from "@react-navigation/native";
 import { Loading } from "../components/loading";
@@ -22,18 +24,19 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
   const [loading, setLoading] = useState(false);
-  const [noMedicines, setNoMedicines] = useState(false);
+  const [noMedicines, setNoMedicines] = useState(true);
   const { listMedicines, deleteMedicine, getMedicines } = useMedicines();
   const toast = useToast();
 
   useFocusEffect(
     React.useCallback(() => {
       const getList = async () => {
-        setLoading(true);
         try {
+          setLoading(true);
           await getMedicines();
         } catch (error) {
-          toast.show(`${error}`, { type: "danger" });
+          const message = `${error}`.split(": ")[1];
+          toast.show(message, { type: "danger" });
         } finally {
           setLoading(false);
         }
@@ -48,12 +51,14 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   }, [listMedicines]);
 
   const handleDelete = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       await deleteMedicine(medicineSelected.id);
-      toast.show("Remédio deletado com sucesso", { type: "success" });
+      toast.show("Remédio excluído com sucesso", { type: "success" });
+      await getMedicines();
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
     } finally {
       setLoading(false);
     }
@@ -106,7 +111,10 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
         <>
           <View style={styles.containerCard}>
             <Card variant="secondary">
-              <Text style={stylesModal.text}>Você ainda não possui remédios cadastrados!</Text>
+              <View style={styles.emptyCard}>
+                <Image source={RedCircle} style={styles.image} />
+                <Text style={stylesModal.text}>Não há remédios cadastrados</Text>
+              </View>
             </Card>
           </View>
         </>
@@ -177,6 +185,15 @@ const styles = StyleSheet.create({
   textButton: {
     fontFamily: fontFamily.regular,
     fontSize: fontSize.md,
+  },
+  image: {
+    height: 50,
+    width: 50,
+    resizeMode: 'contain'
+  },
+  emptyCard: {
+    flexDirection: 'row',
+    gap: 20,
   },
   iconButton: {
     position: "absolute",

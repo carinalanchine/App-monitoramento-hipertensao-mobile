@@ -49,13 +49,14 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       return
     }
 
-    setLoading(true);
     try {
+      setLoading(true);
       await createPatient(form);
       toast.show("Cadastro realizado com sucesso", { type: "success" });
       navigation.navigate("login");
     } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
     } finally {
       setLoading(false);
     }
@@ -89,6 +90,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         <View style={styles.containerInput}>
           <Input
             label="nome"
+            autoCapitalize="words"
             blurOnSubmit={false}
             enterKeyHint="next"
             onSubmitEditing={() => { cpfRef.current.focus() }}
@@ -109,6 +111,8 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           <Input
             ref={passwordRef}
             enterKeyHint="next"
+            autoCapitalize="none"
+            autoCorrect={false}
             blurOnSubmit={false}
             onSubmitEditing={() => { verifyPasswordRef.current.focus() }}
             label="senha"
@@ -119,6 +123,8 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           />
           <Input
             ref={verifyPasswordRef}
+            autoCapitalize="none"
+            autoCorrect={false}
             label="confirmar senha"
             placeholder="********"
             secureTextEntry
