@@ -8,9 +8,8 @@ import { StatusBarComponent } from "../components/status-bar";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
 import React from "react";
 import { useToast } from "react-native-toast-notifications";
-import { useAuthStore } from "../store/authStore";
-import { URL_BASE } from "../util/constants";
 import { Loading } from "../components/loading";
+import { usePressure } from "../service/blood-pressure.api";
 
 type FormPressao = {
   sistolica: number;
@@ -20,32 +19,14 @@ type FormPressao = {
 const MeasurePressureScreen = () => {
   const [form, setForm] = useState<FormPressao | null>({ sistolica: 20, diastolica: 20 });
   const [loading, setLoading] = useState(false);
+  const { createBloodPressure } = usePressure();
   const dadosPicker = [...Array(50).keys()]
   const toast = useToast();
-  const authStore = useAuthStore();
 
   const handleSalvar = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/pressure', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + authStore.accessToken
-        },
-        body: JSON.stringify({
-          systolic: form.sistolica,
-          diastolic: form.diastolica,
-          patientId: authStore.user.id
-        })
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
+      await createBloodPressure(form);
       toast.show("Pressão salva com sucesso", { type: "success" });
     } catch (error) {
       toast.show(`${error}`, { type: "danger" });

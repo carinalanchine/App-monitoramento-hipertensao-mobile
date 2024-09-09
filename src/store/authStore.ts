@@ -7,6 +7,7 @@ type authStoreProps = {
 
   setSignIn: (newUser: IUser, token: string) => void;
   setSignOut: () => void;
+  setRefresh: (token: string) => void;
 }
 
 export const useAuthStore = create<authStoreProps>((set) => ({
@@ -21,5 +22,9 @@ export const useAuthStore = create<authStoreProps>((set) => ({
   setSignOut: () => set(() => ({
     user: null,
     accessToken: "",
-  }))
+  })),
+
+  setRefresh: (token: string) => set(() => ({
+    accessToken: token,
+  })),
 }));

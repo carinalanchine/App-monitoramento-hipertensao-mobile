@@ -12,10 +12,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import { StatusBarComponent } from "../components/status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuthStore } from "../store/authStore";
 import { useToast } from "react-native-toast-notifications";
-import { URL_BASE } from "../util/constants";
 import { Loading } from "../components/loading";
+import { useMedicines } from "../service/medicine.api";
 
 type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
@@ -29,8 +28,8 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormMedicine | null>(null);
   const [step, setStep] = useState(1);
+  const { createMedicine } = useMedicines();
   const toast = useToast();
-  const authStore = useAuthStore();
 
   const titleContent = [
     'Nome do remédio',
@@ -47,26 +46,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/medicine', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + authStore.accessToken
-        },
-        body: JSON.stringify({
-          title: form.title,
-          dosage: form.dosage,
-          interval: form.interval,
-          patientId: authStore.user.id
-        })
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
+      await createMedicine(form);
       toast.show("Remédio cadastrado com sucesso", { type: "success" });
       navigation.goBack();
     } catch (error) {

@@ -12,10 +12,8 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
-import { useAuthStore } from "../store/authStore";
-import { URL_BASE } from "../util/constants";
-import { storeSignIn } from "../util/storage";
 import { Loading } from "../components/loading";
+import { useAuth } from "../service/auth.api";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "login">;
 
@@ -28,8 +26,8 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
   const [form, setForm] = useState<FormLogin | null>(null);
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<TextInput | null>(null);
+  const { loginPatient } = useAuth();
   const toast = useToast();
-  const authStore = useAuthStore();
 
   const handleLogin = async () => {
     if (!form || !form.cpf || form.cpf.length < 14 || !form.password) {
@@ -39,31 +37,10 @@ const LoginScreen = ({ navigation }: LoginScreenProps) => {
 
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/login', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          cpf: form.cpf,
-          password: form.password
-        })
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
-      const newUser = { id: json.user.id, name: json.user.name };
-      const token = { accessToken: json.accessToken, refreshToken: json.refreshToken };
-      await storeSignIn(newUser, token);
-      authStore.setSignIn(newUser, token.accessToken);
-
+      await loginPatient(form);
       toast.show("Login realizado com sucesso", { type: "success" });
     } catch (error) {
-      toast.show("Não foi possível realizar o login", { type: "danger" });
+      toast.show(`${error}`, { type: "danger" });
     } finally {
       setLoading(false);
     }

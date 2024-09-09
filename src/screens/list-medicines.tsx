@@ -7,15 +7,14 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
 import { useToast } from "react-native-toast-notifications";
-import { useAuthStore } from "../store/authStore";
-import { URL_BASE } from "../util/constants";
 import { useFocusEffect } from "@react-navigation/native";
 import { Loading } from "../components/loading";
+import { useMedicines } from "../service/medicine.api";
 
 type ListMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'listMedicines'>;
 
@@ -23,66 +22,35 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
   const [loading, setLoading] = useState(false);
-  const [listMedicines, setListMedicines] = useState<IMedicine[]>(null);
   const [noMedicines, setNoMedicines] = useState(false);
+  const { listMedicines, deleteMedicine, getMedicines } = useMedicines();
   const toast = useToast();
-  const authStore = useAuthStore();
 
   useFocusEffect(
     React.useCallback(() => {
-      getMedicines();
+      const getList = async () => {
+        setLoading(true);
+        try {
+          await getMedicines();
+        } catch (error) {
+          toast.show(`${error}`, { type: "danger" });
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      getList();
     }, [])
   )
 
-  const getMedicines = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(URL_BASE + '/medicine/list/' + authStore.user.id, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + authStore.accessToken
-        }
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
-      if (json.total > 0) {
-        setListMedicines(json.medicines);
-        setNoMedicines(false);
-      }
-
-      else
-        setNoMedicines(true);
-    } catch (error) {
-      toast.show(`${error}`, { type: "danger" });
-    } finally {
-      setLoading(false);
-    }
-  }
+  useEffect(() => {
+    if (listMedicines) setNoMedicines(listMedicines.length === 0);
+  }, [listMedicines]);
 
   const handleDelete = async () => {
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/medicine/' + medicineSelected.id, {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + authStore.accessToken
-        }
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
-      await getMedicines();
+      await deleteMedicine(medicineSelected.id);
       toast.show("Remédio deletado com sucesso", { type: "success" });
     } catch (error) {
       toast.show(`${error}`, { type: "danger" });

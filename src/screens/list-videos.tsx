@@ -5,14 +5,12 @@ import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
 import { StatusBarComponent } from "../components/status-bar";
 import { useEffect, useState } from "react";
-import { IVideo } from "../interfaces/IVideo";
 import { useToast } from "react-native-toast-notifications";
-import { useAuthStore } from "../store/authStore";
-import { URL_BASE } from "../util/constants";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
 import { Card } from "../components/card";
 import { Loading } from "../components/loading";
+import { useVideos } from "../service/video.api";
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, "listVideos">;
 
@@ -22,38 +20,18 @@ const extractVideoId = (link: string) => {
 }
 
 const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
-  const [loading, setLoading] = useState(true);
-  const [listVideos, setListVideos] = useState<IVideo[]>(null);
+  const [loading, setLoading] = useState(false);
   const [noVideos, setNoVideos] = useState(false);
+  const { listVideos, getVideos } = useVideos();
   const { width } = useWindowDimensions();
   const video_height = 250;
   const toast = useToast();
-  const authStore = useAuthStore();
 
   useEffect(() => {
-    const getVideos = async () => {
+    const getList = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(URL_BASE + '/video/list', {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer ' + authStore.accessToken
-          }
-        });
-
-        const json = await response.json();
-
-        if (json.status !== "success")
-          throw new Error(json.message);
-
-        if (json.total > 0) {
-          setListVideos(json.videos);
-          setNoVideos(false);
-        }
-
-        else
-          setNoVideos(true)
+        await getVideos();
       } catch (error) {
         toast.show(`${error}`, { type: "danger" });
       } finally {
@@ -61,8 +39,12 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
       }
     }
 
-    getVideos();
+    getList();
   }, []);
+
+  useEffect(() => {
+    if (listVideos) setNoVideos(listVideos.length === 0)
+  }, [listVideos]);
 
   return (
     <SafeAreaView style={styles.container}>

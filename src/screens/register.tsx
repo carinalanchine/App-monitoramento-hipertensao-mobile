@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { View, StyleSheet, Text, ScrollView, ActivityIndicator, TextInput } from "react-native";
+import { View, StyleSheet, Text, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { RootStackParamList } from "../routes/stack.routes";
@@ -12,8 +12,8 @@ import Input from "../components/input";
 import { Button } from "../components/button";
 import { useToast } from "react-native-toast-notifications";
 import { StatusBarComponent } from "../components/status-bar";
-import { HOSPITAL_ID, URL_BASE } from "../util/constants";
 import { Loading } from "../components/loading";
+import { usePatient } from "../service/patient.api";
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, "register">;
 
@@ -27,6 +27,7 @@ type FormRegister = {
 const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<FormRegister | null>(null);
+  const { createPatient } = usePatient();
   const toast = useToast();
 
   const cpfRef = useRef<TextInput | null>();
@@ -50,25 +51,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
 
     setLoading(true);
     try {
-      const response = await fetch(URL_BASE + '/patient', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          cpf: form.cpf,
-          name: form.nome,
-          password: form.password,
-          hospitalId: HOSPITAL_ID
-        })
-      });
-
-      const json = await response.json();
-
-      if (json.status !== "success")
-        throw new Error(json.message);
-
+      await createPatient(form);
       toast.show("Cadastro realizado com sucesso", { type: "success" });
       navigation.navigate("login");
     } catch (error) {
