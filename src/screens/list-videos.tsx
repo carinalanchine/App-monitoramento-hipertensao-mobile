@@ -23,7 +23,7 @@ const extractVideoId = (link: string) => {
 
 const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(false);
-  const [noVideos, setNoVideos] = useState(true);
+  const [noVideos, setNoVideos] = useState(false);
   const { listVideos, getVideos } = useVideos();
   const { width } = useWindowDimensions();
   const video_height = 250;

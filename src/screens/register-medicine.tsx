@@ -31,13 +31,30 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const { createMedicine } = useMedicines();
   const toast = useToast();
 
+  const array = [{
+    id: 1,
+    nome: "Losartana"
+  }, {
+    id: 2,
+    nome: 'bbbbbbb'
+  }, {
+    id: 3,
+    nome: 'bbbbbbb'
+  }, {
+    id: 4,
+    nome: 'bbbbbbb'
+  }, {
+    id: 5,
+    nome: 'bbbbbbb'
+  },]
+
   const titleContent = [
     'Nome do remédio',
     'Dosagem do remédio',
     'Frequência',
   ]
 
-  const exContent = [
+  const examplesContent = [
     'Losartana',
     '40 mg',
     '8 horas',
@@ -58,27 +75,11 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   }
 
   const handleButton = () => {
-    if (step < 3) {
-      if (step == 1 && !form?.title) {
-        toast.show("Preencha o nome do remédio", { type: "danger" });
-        return;
-      }
-
-      if (step == 2 && !form?.dosage) {
-        toast.show("Preencha a dosagem do remédio", { type: "danger" });
-        return;
-      }
-
-      setStep(step + 1);
+    if ((step == 1 && !form?.title) || (step == 2 && !form?.dosage) || (step == 3 && !form?.interval)) {
+      toast.show("Preencha todos os campos", { type: "danger" });
       return;
     }
-
-    if (!form?.interval) {
-      toast.show("Preencha o intervalo do remédio", { type: "danger" });
-      return;
-    }
-
-    handleRegister();
+    step == 3 ? handleRegister() : setStep(step + 1);
   }
 
   const handleInput = (text: string) => {
@@ -130,7 +131,7 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
 
           <View style={styles.inputContainer}>
             <Input
-              placeholder={'ex: ' + exContent[step - 1]}
+              placeholder={'ex: ' + examplesContent[step - 1]}
               blurOnSubmit={false}
               enterKeyHint={step < 3 ? "next" : "done"}
               autoFocus={true}
@@ -171,6 +172,11 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: fontSize["2xl"],
   },
+  optionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   steps: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -184,6 +190,10 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.regular,
+  },
+  textOptions: {
+    fontSize: fontSize.sm,
+    fontFamily: fontFamily.medium,
   },
   button: {
     paddingHorizontal: 20,

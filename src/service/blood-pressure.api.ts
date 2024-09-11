@@ -8,9 +8,10 @@ type PressureInput = {
 
 export const usePressure = () => {
   const authStore = useAuthStore();
+  const axios = useAxios().instance;
 
   const createBloodPressure = async (form: PressureInput) => {
-    await useAxios({
+    await axios({
       method: 'POST',
       url: '/pressure',
       headers: { 'Authorization': 'Bearer ' + authStore.accessToken },
@@ -19,8 +20,11 @@ export const usePressure = () => {
         diastolic: form.diastolica,
         patientId: authStore.user.id
       }
-    }).catch(() => {
-      throw new Error("Não foi possível salvar a pressão");
+    }).catch((error) => {
+      if (error.response)
+        throw new Error("Não foi possível salvar a pressão");
+
+      throw error;
     })
   }
 

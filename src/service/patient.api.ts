@@ -8,8 +8,10 @@ type RegisterPatientInput = {
 }
 
 export const usePatient = () => {
+  const axios = useAxios().instance;
+
   const createPatient = async (form: RegisterPatientInput) => {
-    await useAxios({
+    await axios({
       method: 'POST',
       url: '/patient',
       data: {

@@ -6,8 +6,8 @@ type ButtonProps = {
   children: ReactNode;
   onPress?: () => void;
   variant: "primary" | "destructive" | "default" |
-  "lightBlue" | "pink" | "tertiary" | "outline" | "secondary";
-  size: "full" | "md" | "menuCard" | "backButton";
+  "lightBlue" | "pink" | "tertiary" | "outline" | "secondary" | "createMedicine";
+  size: "full" | "md" | "menuCard" | "backButton" | "createMedicine";
 }
 
 export const Button = (input: ButtonProps) => {
@@ -48,6 +48,11 @@ const stylesVariant = StyleSheet.create({
     borderColor: colors.black,
     borderWidth: 1,
   },
+  createMedicine: {
+    backgroundColor: colors.white,
+    borderColor: colors.black,
+    borderWidth: 1,
+  }
 })
 
 const stylesSize = StyleSheet.create({
@@ -69,6 +74,11 @@ const stylesSize = StyleSheet.create({
   backButton: {
     width: '100%',
     height: 48,
+  },
+  createMedicine: {
+    width: 100,
+    height: 40,
+    borderRadius: 100,
   }
 })
 
@@ -81,6 +91,7 @@ const variantStyles = {
   secondary: stylesVariant.secondary,
   lightBlue: stylesVariant.lightBlue,
   pink: stylesVariant.pink,
+  createMedicine: stylesVariant.createMedicine
 }
 
 const sizeStyles = {
@@ -88,4 +99,5 @@ const sizeStyles = {
   md: stylesSize.md,
   menuCard: stylesSize.menu,
   backButton: stylesSize.backButton,
+  createMedicine: stylesSize.createMedicine
 }

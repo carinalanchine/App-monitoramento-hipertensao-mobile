@@ -24,7 +24,7 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
   const [loading, setLoading] = useState(false);
-  const [noMedicines, setNoMedicines] = useState(true);
+  const [noMedicines, setNoMedicines] = useState(false);
   const { listMedicines, deleteMedicine, getMedicines } = useMedicines();
   const toast = useToast();
 

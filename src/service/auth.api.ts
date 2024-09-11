@@ -1,4 +1,4 @@
-import { getRefreshToken, storeRefresh, storeSignIn } from "../util/storage";
+import { storeSignIn } from "../util/storage";
 import { useAuthStore } from "../store/authStore";
 import { useAxios } from "../api/useAxios";
 
@@ -9,9 +9,10 @@ type LoginInput = {
 
 export const useAuth = () => {
   const authStore = useAuthStore();
+  const axios = useAxios().instance;
 
   const loginPatient = async (form: LoginInput) => {
-    await useAxios({
+    await axios({
       method: 'POST',
       url: '/login',
       data: {
@@ -32,32 +33,12 @@ export const useAuth = () => {
       await storeSignIn(newUser, token);
       authStore.setSignIn(newUser, token.accessToken);
     }).catch((error) => {
-      if (error.status == 404 || error.status == 401)
+      if (error.status === 401)
         throw new Error(error.response.data.message);
 
       throw new Error("Não foi possível realizar o login");
     })
   }
 
-  const refreshToken = async () => {
-    const refreshToken = await getRefreshToken();
-
-    await useAxios({
-      method: 'POST',
-      url: '/refreshToken',
-      headers: { 'Authorization': 'Bearer ' + refreshToken }
-    }).then(async (response) => {
-      const token = {
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken
-      };
-
-      await storeRefresh(token);
-      authStore.setRefresh(token.accessToken);
-    }).catch(() => {
-      throw new Error("Error on refresh token");
-    })
-  }
-
-  return { loginPatient, refreshToken };
+  return { loginPatient };
 }

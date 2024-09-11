@@ -12,31 +12,38 @@ type CreateMedicineInput = {
 export const useMedicines = () => {
   const [listMedicines, setListMedicines] = useState<IMedicine[]>(null);
   const authStore = useAuthStore();
+  const axios = useAxios().instance;
 
   const getMedicines = async () => {
-    await useAxios({
+    await axios({
       method: 'GET',
       url: '/medicine/list/' + authStore.user.id,
       headers: { 'Authorization': 'Bearer ' + authStore.accessToken }
     }).then((response) => {
       setListMedicines(response.data.medicines);
-    }).catch(() => {
-      throw new Error("Não foi possível recuperar os remédios");
+    }).catch((error) => {
+      if (error.response)
+        throw new Error("Não foi possível recuperar os remédios");
+
+      throw error;
     })
   }
 
   const deleteMedicine = async (id: string) => {
-    await useAxios({
+    await axios({
       method: 'DELETE',
       url: '/medicine/' + id,
       headers: { 'Authorization': 'Bearer ' + authStore.accessToken }
-    }).catch(() => {
-      throw new Error("Não foi possível excluir o remédio");
+    }).catch((error) => {
+      if (error.response)
+        throw new Error("Não foi possível excluir o remédio");
+
+      throw error;
     })
   }
 
   const createMedicine = async (form: CreateMedicineInput) => {
-    await useAxios({
+    await axios({
       method: 'POST',
       url: '/medicine',
       headers: { 'Authorization': 'Bearer ' + authStore.accessToken },
@@ -46,8 +53,11 @@ export const useMedicines = () => {
         interval: form.interval,
         patientId: authStore.user.id
       }
-    }).catch(() => {
-      throw new Error("Não foi possível cadastrar o remédio");
+    }).catch((error) => {
+      if (error.response)
+        throw new Error("Não foi possível cadastrar o remédio");
+
+      throw error;
     })
   }
 
