@@ -20,8 +20,11 @@ export const usePatient = () => {
         password: form.password,
         hospitalId: HOSPITAL_ID
       }
-    }).catch(() => {
-      throw new Error("Não foi possível realizar o cadastro");
+    }).catch((error) => {
+      if (error.response)
+        throw new Error(error.response.data.message);
+
+      throw error;
     })
   }
 

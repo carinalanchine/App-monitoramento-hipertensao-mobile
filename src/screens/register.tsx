@@ -42,7 +42,7 @@ const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
       return
     };
 
-    if (!(form.password === form.verifyPassword)) {
+    if (form.password !== form.verifyPassword) {
       toast.show("As senhas precisam ser iguais", {
         type: "danger",
       });

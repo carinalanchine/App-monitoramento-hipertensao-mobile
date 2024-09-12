@@ -23,7 +23,7 @@ export const useMedicines = () => {
       setListMedicines(response.data.medicines);
     }).catch((error) => {
       if (error.response)
-        throw new Error("Não foi possível recuperar os remédios");
+        throw new Error(error.response.data.message);
 
       throw error;
     })
@@ -36,7 +36,7 @@ export const useMedicines = () => {
       headers: { 'Authorization': 'Bearer ' + authStore.accessToken }
     }).catch((error) => {
       if (error.response)
-        throw new Error("Não foi possível excluir o remédio");
+        throw new Error(error.response.data.message);
 
       throw error;
     })
@@ -55,7 +55,7 @@ export const useMedicines = () => {
       }
     }).catch((error) => {
       if (error.response)
-        throw new Error("Não foi possível cadastrar o remédio");
+        throw new Error(error.response.data.message);
 
       throw error;
     })

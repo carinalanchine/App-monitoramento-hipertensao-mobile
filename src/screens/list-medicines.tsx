@@ -1,18 +1,16 @@
-import { View, StyleSheet, Text, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { fontSize } from "../theme/font-size";
 import { fontFamily } from "../theme/font-family";
-import { Image } from "react-native";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ModalComponent } from "../components/modal";
 import { IMedicine } from "../interfaces/IMedicine";
 import { StatusBarComponent } from "../components/status-bar";
-import RedCircle from "../../assets/red-circle.png"
 import { useToast } from "react-native-toast-notifications";
 import { useFocusEffect } from "@react-navigation/native";
 import { Loading } from "../components/loading";
@@ -24,38 +22,32 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [medicineSelected, setMedicineSelected] = useState<IMedicine | undefined>();
   const [loading, setLoading] = useState(false);
-  const [noMedicines, setNoMedicines] = useState(false);
   const { listMedicines, deleteMedicine, getMedicines } = useMedicines();
   const toast = useToast();
 
+  const getList = async () => {
+    try {
+      setLoading(true);
+      await getMedicines();
+    } catch (error) {
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
-      const getList = async () => {
-        try {
-          setLoading(true);
-          await getMedicines();
-        } catch (error) {
-          const message = `${error}`.split(": ")[1];
-          toast.show(message, { type: "danger" });
-        } finally {
-          setLoading(false);
-        }
-      }
-
       getList();
     }, [])
   )
-
-  useEffect(() => {
-    if (listMedicines) setNoMedicines(listMedicines.length === 0);
-  }, [listMedicines]);
 
   const handleDelete = async () => {
     try {
       setLoading(true);
       await deleteMedicine(medicineSelected.id);
       toast.show("Remédio excluído com sucesso", { type: "success" });
-      await getMedicines();
     } catch (error) {
       const message = `${error}`.split(": ")[1];
       toast.show(message, { type: "danger" });
@@ -107,50 +99,46 @@ const ListMedicinesScreen = ({ navigation }: ListMedicineScreenProps) => {
         </View>
       </ModalComponent>
 
-      {noMedicines ? (
-        <>
+      <FlatList
+        refreshControl={<RefreshControl refreshing={false} onRefresh={getList} />}
+        data={listMedicines}
+        ListEmptyComponent={
           <View style={styles.containerCard}>
             <Card variant="secondary">
               <View style={styles.emptyCard}>
-                <Image source={RedCircle} style={styles.image} />
-                <Text style={stylesModal.text}>Não há remédios cadastrados</Text>
+                <Text style={stylesModal.text}>Ainda não há remédios cadastrados</Text>
               </View>
             </Card>
           </View>
-        </>
-      ) : (
-        <>
-          <FlatList
-            data={listMedicines}
-            contentContainerStyle={{ gap: 1 }}
-            renderItem={({ item }) => (
+        }
+        ListFooterComponent={<View style={styles.flatList}></View>}
+        contentContainerStyle={{ gap: 1 }}
+        renderItem={({ item }) => (
 
-              <View style={styles.containerCard}>
-                <Card variant="secondary">
-                  <View style={styles.contentCard}>
-                    <Text style={styles.textCard}>{item.title}</Text>
-                    <View>
-                      <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
-                      <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
-                    </View>
+          <View style={styles.containerCard}>
+            <Card variant="secondary">
+              <View style={styles.contentCard}>
+                <Text style={styles.textCard}>{item.title}</Text>
+                <View>
+                  <Text style={styles.textCard}>Intervalo: {item.interval}</Text>
+                  <Text style={styles.textCard}>Dosagem: {item.dosage}</Text>
+                </View>
 
-                    <Button
-                      variant="destructive"
-                      size="full"
-                      onPress={() => { setMedicineSelected(item); setModalVisible(true) }}>
-                      <View style={styles.buttonContent}>
-                        <Text style={styles.textButton}>Excluir</Text>
-                      </View>
-                    </Button>
+                <Button
+                  variant="destructive"
+                  size="full"
+                  onPress={() => { setMedicineSelected(item); setModalVisible(true) }}>
+                  <View style={styles.buttonContent}>
+                    <Text style={styles.textButton}>Excluir</Text>
                   </View>
-                </Card>
+                </Button>
               </View>
-            )}
+            </Card>
+          </View>
+        )}
 
-            keyExtractor={(item) => item.id}
-          />
-        </>
-      )}
+        keyExtractor={(item) => item.id}
+      />
 
       <View style={styles.iconButton}>
         <Button variant="tertiary" size="md" onPress={() => navigation.navigate("registerMedicine")}>
@@ -192,13 +180,15 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   emptyCard: {
-    flexDirection: 'row',
-    gap: 20,
+    alignItems: 'center'
   },
   iconButton: {
     position: "absolute",
     bottom: 30,
     right: 30
+  },
+  flatList: {
+    paddingTop: 80,
   },
   buttonContent: {
     flexDirection: 'row',

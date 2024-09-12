@@ -3,14 +3,11 @@ import { colors } from "../theme/colors";
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import YoutubeIframe from "react-native-youtube-iframe";
-import RedCircle from "../../assets/red-circle.png"
-import { Image } from "react-native";
 import { StatusBarComponent } from "../components/status-bar";
 import { useEffect, useState } from "react";
 import { useToast } from "react-native-toast-notifications";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../routes/stack.routes";
-import { Card } from "../components/card";
 import { Loading } from "../components/loading";
 import { useVideos } from "../service/video.api";
 
@@ -23,31 +20,26 @@ const extractVideoId = (link: string) => {
 
 const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
   const [loading, setLoading] = useState(false);
-  const [noVideos, setNoVideos] = useState(false);
   const { listVideos, getVideos } = useVideos();
   const { width } = useWindowDimensions();
   const video_height = 250;
   const toast = useToast();
 
-  useEffect(() => {
-    const getList = async () => {
-      try {
-        setLoading(true);
-        await getVideos();
-      } catch (error) {
-        const message = `${error}`.split(": ")[1];
-        toast.show(message, { type: "danger" });
-      } finally {
-        setLoading(false);
-      }
+  const getList = async () => {
+    try {
+      setLoading(true);
+      await getVideos();
+    } catch (error) {
+      const message = `${error}`.split(": ")[1];
+      toast.show(message, { type: "danger" });
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     getList();
   }, []);
-
-  useEffect(() => {
-    if (listVideos) setNoVideos(listVideos.length === 0)
-  }, [listVideos]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,34 +47,20 @@ const ListVideosScreen = ({ navigation }: LoginScreenProps) => {
       <StatusBarComponent variant="lightBlue" />
       <Loading status={loading}></Loading>
 
-      {noVideos ? (
-        <>
-          <View style={styles.containerCard}>
-            <Card variant="secondary">
-              <View style={styles.emptyCard}>
-                <Image source={RedCircle} style={styles.image} />
-                <Text style={styles.text}>Não há dicas disponibilizadas</Text>
-              </View>
-            </Card>
-          </View>
-        </>
-      ) : (
-        <>
-          <FlatList
-            style={styles.listVideos}
-            data={listVideos}
-            renderItem={({ item }) =>
-              <View style={styles.videoPlayer}>
-                <Text style={styles.textTitleVideo}>{item.title}</Text>
-                <YoutubeIframe
-                  videoId={extractVideoId(item.url)}
-                  height={video_height}
-                  width={width - 30}
-                  play={false}
-                />
-              </View>}
-          />
-        </>)}
+      <FlatList
+        style={styles.listVideos}
+        data={listVideos}
+        renderItem={({ item }) =>
+          <View style={styles.videoPlayer}>
+            <Text style={styles.textTitleVideo}>{item.title}</Text>
+            <YoutubeIframe
+              videoId={extractVideoId(item.url)}
+              height={video_height}
+              width={width - 30}
+              play={false}
+            />
+          </View>}
+      />
 
     </SafeAreaView>
   )

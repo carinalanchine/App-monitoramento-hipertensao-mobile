@@ -33,10 +33,10 @@ export const useAuth = () => {
       await storeSignIn(newUser, token);
       authStore.setSignIn(newUser, token.accessToken);
     }).catch((error) => {
-      if (error.status === 401)
+      if (error.response)
         throw new Error(error.response.data.message);
 
-      throw new Error("Não foi possível realizar o login");
+      throw error;
     })
   }
 

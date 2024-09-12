@@ -8,7 +8,7 @@ export const useAxios = () => {
 
   const instance = axios.create({
     baseURL: URL_BASE,
-    timeout: 5000,
+    timeout: 10000,
     headers: {
       Accept: 'application/json',
       "Content-Type": "application/json"
@@ -20,7 +20,7 @@ export const useAxios = () => {
   }, async (error) => {
     const originalReq = error.config;
 
-    if (error.response && error.response.status === 401 && !originalReq._retry) {
+    if (error.response && error.response.status === 401 && originalReq.url !== '/login' && !originalReq._retry) {
       originalReq._retry = true;
 
       try {

@@ -1,9 +1,9 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native"
+import { Text, View, StyleSheet, ScrollView, FlatList } from "react-native"
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Input from "../components/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colors } from "../theme/colors";
 import { Button } from "../components/button";
 import { ProgressStep } from "../components/progress-step";
@@ -16,7 +16,7 @@ import { useToast } from "react-native-toast-notifications";
 import { Loading } from "../components/loading";
 import { useMedicines } from "../service/medicine.api";
 
-type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, ''>;
+type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
 type FormMedicine = {
   title: string;
@@ -24,28 +24,37 @@ type FormMedicine = {
   interval: string;
 }
 
+type MedicineOption = {
+  id: string,
+  title: string,
+}
+
 const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => {
   const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState<MedicineOption[] | null>(null);
   const [form, setForm] = useState<FormMedicine | null>(null);
   const [step, setStep] = useState(1);
   const { createMedicine } = useMedicines();
   const toast = useToast();
 
   const array = [{
-    id: 1,
-    nome: "Losartana"
+    id: "1",
+    title: "aaaa"
   }, {
-    id: 2,
-    nome: 'bbbbbbb'
+    id: "2",
+    title: 'bbbbbbb'
   }, {
-    id: 3,
-    nome: 'bbbbbbb'
+    id: "3",
+    title: 'bbbbbbb'
   }, {
-    id: 4,
-    nome: 'bbbbbbb'
+    id: "4",
+    title: 'bbbbbbb'
   }, {
-    id: 5,
-    nome: 'bbbbbbb'
+    id: "5",
+    title: 'bbbbbbb'
+  }, {
+    id: "6",
+    title: 'bbbbbbb'
   },]
 
   const titleContent = [
@@ -59,6 +68,10 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     '40 mg',
     '8 horas',
   ]
+
+  useEffect(() => {
+    setOptions(array)
+  }, []);
 
   const handleRegister = async () => {
     try {
@@ -74,15 +87,16 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     }
   }
 
-  const handleButton = () => {
-    if ((step == 1 && !form?.title) || (step == 2 && !form?.dosage) || (step == 3 && !form?.interval)) {
-      toast.show("Preencha todos os campos", { type: "danger" });
-      return;
+  const handleBuscar = (text: string) => {
+    const filterTitle = (option: MedicineOption) => {
+      return (option.title.toLocaleLowerCase()).includes(text.toLowerCase());
     }
-    step == 3 ? handleRegister() : setStep(step + 1);
+
+    const newArray = array.filter(filterTitle);
+    setOptions(newArray);
   }
 
-  const handleInput = (text: string) => {
+  const handleSelectOption = (text: string) => {
     switch (step) {
       case 1:
         setForm({ ...form, title: text })
@@ -96,53 +110,64 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
     }
   }
 
-  const handleInputValue = () => {
-    switch (step) {
-      case 1:
-        return form?.title || ""
-
-      case 2:
-        return form?.dosage || ""
-
-      case 3:
-        return form?.interval || ""
+  const handleButton = () => {
+    if ((step == 1 && !form?.title) || (step == 2 && !form?.dosage) || (step == 3 && !form?.interval)) {
+      toast.show("Preencha todos os campos", { type: "danger" });
+      return;
     }
+    step == 3 ? handleRegister() : setStep(step + 1);
   }
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       <BackButton variant='secondary' onPress={() => step == 1 ? navigation.goBack() : setStep(step - 1)} />
-      <SafeAreaView style={styles.container}>
 
-        <StatusBarComponent variant="secondary" />
-        <Loading status={loading}></Loading>
+      <StatusBarComponent variant="secondary" />
+      <Loading status={loading}></Loading>
 
-        <ScrollView style={styles.content}>
+      <View style={styles.content}>
 
-          <View style={styles.steps}>
-            <ProgressStep number='1' status={step >= 1}></ProgressStep>
-            <AntDesign name="arrowright" size={25} color="black" />
-            <ProgressStep number='2' status={step >= 2}></ProgressStep>
-            <AntDesign name="arrowright" size={25} color="black" />
-            <ProgressStep number='3' status={step >= 3}></ProgressStep>
-          </View>
+        <View style={styles.steps}>
+          <ProgressStep number='1' status={step >= 1}></ProgressStep>
+          <AntDesign name="arrowright" size={25} color="black" />
+          <ProgressStep number='2' status={step >= 2}></ProgressStep>
+          <AntDesign name="arrowright" size={25} color="black" />
+          <ProgressStep number='3' status={step >= 3}></ProgressStep>
+        </View>
 
-          <Text style={styles.text}>{titleContent[step - 1]}</Text>
+        <Text style={styles.text}>{titleContent[step - 1]}</Text>
 
-          <View style={styles.inputContainer}>
-            <Input
-              placeholder={'ex: ' + examplesContent[step - 1]}
-              blurOnSubmit={false}
-              enterKeyHint={step < 3 ? "next" : "done"}
-              autoFocus={true}
-              onSubmitEditing={handleButton}
-              value={handleInputValue()}
-              onChangeText={(text) => handleInput(text)}
-            >
-            </Input>
-          </View>
+        <View style={styles.inputContainer}>
+          <Input
+            label="buscar"
+            placeholder={'ex: ' + examplesContent[step - 1]}
+            blurOnSubmit={false}
+            enterKeyHint="done"
+            onSubmitEditing={handleButton}
+            onChangeText={(text) => handleBuscar(text)}
+          >
+          </Input>
 
-        </ScrollView >
+          <FlatList
+            data={options}
+            initialNumToRender={3}
+            numColumns={3}
+            contentContainerStyle={{ gap: 10 }}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            renderItem={({ item }) => (
+
+              <Button size="createMedicine" variant="createMedicine" onPress={() => handleSelectOption(item.title)}>
+                <View style={styles.buttonContent}>
+                  <Text style={styles.textOptions}>{item.title}</Text>
+                </View>
+              </Button>
+
+            )}
+
+            keyExtractor={(item) => item.id}
+          />
+
+        </View >
 
         <View style={styles.button}>
           <Button size="full" variant="tertiary" onPress={handleButton}>
@@ -151,9 +176,9 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
             </View>
           </Button>
         </View>
+      </View>
 
-      </SafeAreaView >
-    </>
+    </SafeAreaView >
   )
 }
 
@@ -164,18 +189,13 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   inputContainer: {
-    paddingTop: 30,
+    paddingTop: 40,
   },
   text: {
-    paddingLeft: 10,
+    paddingLeft: 5,
     paddingTop: 30,
     fontFamily: fontFamily.regular,
     fontSize: fontSize["2xl"],
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   steps: {
     alignItems: 'center',
@@ -194,9 +214,12 @@ const styles = StyleSheet.create({
   textOptions: {
     fontSize: fontSize.sm,
     fontFamily: fontFamily.medium,
+    textAlign: 'center',
   },
   button: {
-    paddingHorizontal: 20,
+    bottom: -220,
+    width: '100%',
+    paddingHorizontal: 5,
   },
   buttonContent: {
     justifyContent: 'center',

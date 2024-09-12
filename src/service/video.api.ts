@@ -17,7 +17,7 @@ export const useVideos = () => {
       setListVideos(response.data.videos);
     }).catch((error) => {
       if (error.response)
-        throw new Error("Não foi possível recuperar os vídeos");
+        throw new Error(error.response.data.message);
 
       throw error;
     })

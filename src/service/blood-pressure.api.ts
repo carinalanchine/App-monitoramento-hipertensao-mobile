@@ -22,7 +22,7 @@ export const usePressure = () => {
       }
     }).catch((error) => {
       if (error.response)
-        throw new Error("Não foi possível salvar a pressão");
+        throw new Error(error.response.data.message);
 
       throw error;
     })
