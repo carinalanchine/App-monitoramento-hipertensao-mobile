@@ -16,7 +16,7 @@ import { useToast } from "react-native-toast-notifications";
 import { Loading } from "../components/loading";
 import { useMedicines } from "../service/medicine.api";
 
-type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, ''>;
+type RegisterMedicineScreenProps = NativeStackScreenProps<RootStackParamList, 'registerMedicine'>;
 
 type FormMedicine = {
   title: string;
@@ -30,23 +30,6 @@ const RegisterMedicineScreen = ({ navigation }: RegisterMedicineScreenProps) => 
   const [step, setStep] = useState(1);
   const { createMedicine } = useMedicines();
   const toast = useToast();
-
-  const array = [{
-    id: 1,
-    nome: "Losartana"
-  }, {
-    id: 2,
-    nome: 'bbbbbbb'
-  }, {
-    id: 3,
-    nome: 'bbbbbbb'
-  }, {
-    id: 4,
-    nome: 'bbbbbbb'
-  }, {
-    id: 5,
-    nome: 'bbbbbbb'
-  },]
 
   const titleContent = [
     'Nome do remédio',
@@ -172,11 +155,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     fontSize: fontSize["2xl"],
   },
-  optionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   steps: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -190,10 +168,6 @@ const styles = StyleSheet.create({
   textButton: {
     fontSize: fontSize.md,
     fontFamily: fontFamily.regular,
-  },
-  textOptions: {
-    fontSize: fontSize.sm,
-    fontFamily: fontFamily.medium,
   },
   button: {
     paddingHorizontal: 20,

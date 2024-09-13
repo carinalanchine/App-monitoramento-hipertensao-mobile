@@ -6,7 +6,7 @@ import { fontSize } from "../theme/font-size";
 import MeasurePressureScreen from "../screens/measure-pressure";
 import ListVideosScreen from "../screens/list-videos";
 import ListMedicinesScreen from "../screens/list-medicines";
-import RegisterMedicineScreen from "../screens/register-medicine2";
+import RegisterMedicineScreen from "../screens/register-medicine";
 import InitialScreen from "../screens/initial";
 import RegisterScreen from "../screens/register";
 import HomeScreen from "../screens/home";
