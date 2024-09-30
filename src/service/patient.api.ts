@@ -1,4 +1,3 @@
-import { HOSPITAL_ID } from "../util/constants";
 import { useAxios } from "../api/useAxios";
 
 type RegisterPatientInput = {
@@ -8,6 +7,7 @@ type RegisterPatientInput = {
 }
 
 export const usePatient = () => {
+  const HOSPITAL_ID = process.env.HOSPITAL_ID;
   const axios = useAxios().instance;
 
   const createPatient = async (form: RegisterPatientInput) => {

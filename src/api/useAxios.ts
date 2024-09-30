@@ -1,13 +1,13 @@
 import axios, { CanceledError } from "axios";
-import { URL_BASE } from "../util/constants";
 import { useAuthStore } from "../store/authStore";
 import { getRefreshToken, storeRefresh, storeSignOut } from "../util/storage";
 
 export const useAxios = () => {
+  const BASE_URL = process.env.BASE_URL;
   const authStore = useAuthStore();
 
   const instance = axios.create({
-    baseURL: URL_BASE,
+    baseURL: BASE_URL,
     timeout: 10000,
     headers: {
       Accept: 'application/json',
@@ -26,7 +26,7 @@ export const useAxios = () => {
       try {
         const refreshToken = await getRefreshToken();
         const headers = { 'Authorization': 'Bearer ' + refreshToken };
-        const response = await axios.post(URL_BASE + '/token', {}, { headers })
+        const response = await axios.post(BASE_URL + '/token', {}, { headers })
 
         const token = {
           accessToken: response.data.accessToken,
