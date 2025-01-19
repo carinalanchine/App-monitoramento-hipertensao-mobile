@@ -1,4 +1,5 @@
 import { Text, View, StyleSheet, ScrollView } from "react-native"
+import React from 'react'
 import { fontFamily } from "../theme/font-family";
 import { fontSize } from "../theme/font-size";
 import AntDesign from '@expo/vector-icons/AntDesign';
